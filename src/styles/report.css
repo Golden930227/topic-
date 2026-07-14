@@ -12,3 +12,90 @@
 .report-form textarea { resize: vertical; }
 .report-form button { justify-self: start; padding: 13px 25px; border: 0; border-radius: 10px; color: white; background: #7041da; }
 .report-notice { margin: 0; padding: 12px; border-radius: 9px; color: #5b399e; background: #f1ebfd; }
+
+/* =====================================================
+   RWD START - Tablet / Mobile <= 768px
+   下面全部為手機與平板版規則
+   不可影響桌面版
+===================================================== */
+
+@media (max-width: 768px) {
+
+  /* =========================
+     RWD - Report Page
+  ========================= */
+
+  .report-navbar {
+    width: 100%;
+    padding: 14px 16px;
+    gap: 16px;
+  }
+
+  .report-navbar .brand {
+    min-width: 0;
+    white-space: normal;
+  }
+
+  .report-navbar > a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .report-main {
+    width: 100%;
+    padding: 32px 16px;
+  }
+
+  .report-panel {
+    width: 100%;
+    max-width: 100%;
+    padding: 22px;
+    overflow-wrap: anywhere;
+  }
+
+  .report-panel h1 { font-size: 34px; }
+
+  .report-form input,
+  .report-form select,
+  .report-form textarea {
+    max-width: 100%;
+    font-size: 16px;
+  }
+
+  .report-form button {
+    width: 100%;
+    min-height: 44px;
+  }
+}
+
+/* =====================================================
+   RWD END - Tablet / Mobile <= 768px
+===================================================== */
+
+
+/* =====================================================
+   RWD START - Small Mobile <= 480px
+   下面全部為小螢幕手機微調
+===================================================== */
+
+@media (max-width: 480px) {
+
+  /* =========================
+     RWD - Report Page
+  ========================= */
+
+  .report-navbar { padding: 10px 12px; }
+  .report-navbar .brand { gap: 7px; font-size: 18px; }
+  .report-navbar .logo { width: 38px; height: 38px; }
+  .report-main { padding: 24px 12px; }
+  .report-panel { padding: 18px; }
+  .report-panel h1 { font-size: 30px; }
+  .report-navbar > a,
+  .report-form button { min-height: 44px; }
+}
+
+/* =====================================================
+   RWD END - Small Mobile <= 480px
+===================================================== */

@@ -5,12 +5,23 @@ import { openCnnMonitor } from "../../utils/openCnnMonitor.js"
 
 function Navbar({ user, onAuthButtonClick }) {
   const [openMenu, setOpenMenu] = useState(null)
+  // RWD - Mobile navigation state
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const navbarRef = useRef(null)
   const closeMenu = () => setOpenMenu(null)
 
+  // RWD - Close mobile menu
+  function closeMobileMenu() {
+    setMobileMenuOpen(false)
+    setOpenMenu(null)
+  }
+
   useEffect(() => {
     const closeOnOutsideClick = (event) => {
-      if (navbarRef.current && !navbarRef.current.contains(event.target)) closeMenu()
+      if (navbarRef.current && !navbarRef.current.contains(event.target)) {
+        setOpenMenu(null)
+        setMobileMenuOpen(false)
+      }
     }
     document.addEventListener("mousedown", closeOnOutsideClick)
     return () => document.removeEventListener("mousedown", closeOnOutsideClick)
@@ -28,7 +39,12 @@ function Navbar({ user, onAuthButtonClick }) {
   return (
     <header className="navbar" ref={navbarRef}>
       <Logo />
-      <nav className="main-nav">
+      <nav
+        className={`main-nav ${mobileMenuOpen ? "mobile-menu-open" : ""}`}
+        onClick={(event) => {
+          if (event.target.closest("a")) closeMobileMenu()
+        }}
+      >
         <a href="https://docs.google.com/presentation/d/1ytDy_Np1tneWL0554-NldsedGhtqcNuv/edit?usp=sharing&ouid=103734357927532998525&rtpof=true&sd=true" target="_blank" rel="noreferrer">整體方塊圖</a>
         {dropdown("sensor", "智慧感測器", <><a href="http://localhost:8501" target="_blank" rel="noreferrer" onClick={closeMenu}>智慧感測器</a><a href="http://localhost:8502" target="_blank" rel="noreferrer" onClick={closeMenu}>人工智能模型</a></>)}
         {dropdown("cnn", "CNN監測與問題回報", <><a href="#cnn-monitor" onClick={(event) => { closeMenu(); openCnnMonitor(event) }}>CNN監測</a><a href="/report" onClick={closeMenu}>問題回報</a></>)}
@@ -36,9 +52,22 @@ function Navbar({ user, onAuthButtonClick }) {
         <a href="#references">參考資料</a>
       </nav>
       <div className="actions">
-        <button type="button" className="login" onClick={onAuthButtonClick}>{user ? "登出" : "同組登入"}</button>
-        <Link className="start" to="/worker">Get started</Link>
+        <button type="button" className="login" onClick={() => { closeMobileMenu(); onAuthButtonClick() }}>{user ? "登出" : "同組登入"}</button>
+        <Link className="start" to="/worker" onClick={closeMobileMenu}>Get started</Link>
       </div>
+      {/* RWD - Mobile menu toggle */}
+      <button
+        type="button"
+        className="mobile-menu-toggle"
+        aria-label={mobileMenuOpen ? "關閉導覽選單" : "開啟導覽選單"}
+        aria-expanded={mobileMenuOpen}
+        onClick={() => {
+          setMobileMenuOpen((isOpen) => !isOpen)
+          setOpenMenu(null)
+        }}
+      >
+        ☰
+      </button>
     </header>
   )
 }

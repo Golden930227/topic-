@@ -5,3 +5,60 @@ body { margin: 0; min-width: 320px; }
 button, a { font: inherit; }
 button { cursor: pointer; }
 #root { min-height: 100vh; }
+
+/* =====================================================
+   RWD START - Tablet / Mobile <= 768px
+   下面全部為手機與平板版規則
+   不可影響桌面版
+===================================================== */
+
+@media (max-width: 768px) {
+
+  /* =========================
+     RWD - Global Protection
+  ========================= */
+
+  html,
+  body,
+  #root {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  img { max-width: 100%; }
+
+  .home-page,
+  .home-hero,
+  .worker-page,
+  .worker-main,
+  .report-page,
+  .report-main {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+/* =====================================================
+   RWD END - Tablet / Mobile <= 768px
+===================================================== */
+
+
+/* =====================================================
+   RWD START - Small Mobile <= 480px
+   下面全部為小螢幕手機微調
+===================================================== */
+
+@media (max-width: 480px) {
+
+  /* =========================
+     RWD - Global Protection
+  ========================= */
+
+  .home-page,
+  .worker-page,
+  .report-page { overflow-wrap: anywhere; }
+}
+
+/* =====================================================
+   RWD END - Small Mobile <= 480px
+===================================================== */

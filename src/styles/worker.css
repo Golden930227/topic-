@@ -5,7 +5,13 @@
 .worker-nav a { padding: 12px 14px; border-radius: 10px; color: #e9e4f5; text-decoration: none; transition: background .2s; }
 .worker-nav a:hover { background: #ffffff18; }
 .worker-signout { margin-top: auto; padding: 12px; border: 1px solid #ffffff38; border-radius: 10px; color: white; background: #ffffff12; }
-.worker-main { padding: clamp(28px, 5vw, 64px); }
+.worker-main {
+  min-height: 100vh;
+  padding: clamp(28px, 5vw, 64px);
+  background:
+    linear-gradient(rgba(245, 246, 251, .82), rgba(245, 246, 251, .9)),
+    url("../assets/work_page_background.jpg") center / cover fixed;
+}
 .worker-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 30px; margin-bottom: 38px; }
 .worker-header h1 { margin: 6px 0 10px; font-size: clamp(34px, 4vw, 50px); }
 .worker-header p { margin: 0; color: #6d687b; }
@@ -19,4 +25,121 @@
 .worker-card strong { font-size: 22px; }
 .worker-card > span:not(.worker-card-icon) { color: #716b7f; line-height: 1.6; }
 .worker-card small { margin-top: auto; color: #7041da; font-weight: 700; }
-@media (max-width: 850px) { .worker-page { grid-template-columns: 1fr; } .worker-sidebar { position: static; height: auto; } .worker-dashboard { grid-template-columns: 1fr; } .worker-header { flex-direction: column; } }
+
+/* =====================================================
+   RWD START - Tablet / Mobile <= 768px
+   下面全部為手機與平板版規則
+   不可影響桌面版
+===================================================== */
+
+@media (max-width: 768px) {
+
+  /* =========================
+     RWD - Worker Page
+  ========================= */
+
+  .worker-page {
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .worker-sidebar {
+    position: static;
+    width: 100%;
+    height: auto;
+    padding: 20px 16px;
+    gap: 20px;
+  }
+
+  .worker-nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .worker-nav a,
+  .worker-signout {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    overflow-wrap: anywhere;
+  }
+
+  .worker-signout {
+    width: 100%;
+    margin-top: 0;
+    justify-content: center;
+  }
+
+  .worker-main {
+    width: 100%;
+    min-width: 0;
+    padding: 28px 16px;
+    background-attachment: scroll;
+  }
+
+  .worker-header {
+    min-width: 0;
+    flex-direction: column;
+    gap: 18px;
+    margin-bottom: 28px;
+  }
+
+  .worker-header > div { max-width: 100%; }
+
+  .worker-user {
+    width: 100%;
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .worker-user span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .worker-dashboard {
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .worker-card {
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    padding: 22px;
+    overflow-wrap: anywhere;
+  }
+}
+
+/* =====================================================
+   RWD END - Tablet / Mobile <= 768px
+===================================================== */
+
+
+/* =====================================================
+   RWD START - Small Mobile <= 480px
+   下面全部為小螢幕手機微調
+===================================================== */
+
+@media (max-width: 480px) {
+
+  /* =========================
+     RWD - Worker Page
+  ========================= */
+
+  .worker-sidebar { padding: 16px 12px; }
+  .worker-sidebar .brand { gap: 8px; font-size: 19px; }
+  .worker-sidebar .logo { width: 40px; height: 40px; }
+  .worker-nav { grid-template-columns: minmax(0, 1fr); }
+  .worker-main { padding: 22px 12px; }
+  .worker-header h1 { font-size: 31px; }
+  .worker-card { min-height: 0; padding: 19px; }
+  .worker-nav a,
+  .worker-signout,
+  .worker-card { min-height: 44px; }
+}
+
+/* =====================================================
+   RWD END - Small Mobile <= 480px
+===================================================== */

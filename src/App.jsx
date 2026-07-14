@@ -8,7 +8,13 @@ import WorkerPage from "./pages/WorkerPage.jsx"
 import ReportPage from "./pages/ReportPage.jsx"
 import "./App.css"
 
-const allowedEmails = ["g99226@gmail.com"]
+const allowedEmails = [
+  "g99226@gmail.com",
+  "chenhongrui416@gmail.com",
+  "P124826960@gmail.com",
+  "44o3249@gmaiil.com",
+  "xindongh522@gmail.com",
+];
 
 function App() {
   const [user, setUser] = useState(null)
@@ -24,10 +30,15 @@ function App() {
 
     try {
       const result = await signInWithPopup(auth, googleProvider)
-      if (!allowedEmails.includes(result.user.email)) {
-        await signOut(auth)
-        window.alert("此帳號沒有同組成員權限。")
-      }
+
+    if (!allowedEmails.includes(result.user.email)) {
+    await signOut(auth)
+    window.alert("此帳號沒有同組成員權限。")
+    return
+    }
+
+// 登入成功，自動進工作頁
+window.location.href = "/worker"
     } catch (error) {
       window.alert(`登入失敗：${error.message}`)
     }
