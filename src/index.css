@@ -1,0 +1,7 @@
+:root { font-family: Arial, "Microsoft JhengHei", sans-serif; color: #1d2b3a; background: #e9f6ff; font-synthesis: none; text-rendering: optimizeLegibility; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; min-width: 320px; }
+button, a { font: inherit; }
+button { cursor: pointer; }
+#root { min-height: 100vh; }

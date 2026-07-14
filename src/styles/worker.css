@@ -1,0 +1,22 @@
+.worker-page { min-height: 100vh; display: grid; grid-template-columns: 280px 1fr; background: #f5f6fb; }
+.worker-sidebar { position: sticky; top: 0; height: 100vh; padding: 30px 24px; display: flex; flex-direction: column; gap: 38px; color: white; background: linear-gradient(165deg, #211a3b, #30205e); }
+.worker-sidebar .brand { color: white; }
+.worker-nav { display: grid; gap: 8px; }
+.worker-nav a { padding: 12px 14px; border-radius: 10px; color: #e9e4f5; text-decoration: none; transition: background .2s; }
+.worker-nav a:hover { background: #ffffff18; }
+.worker-signout { margin-top: auto; padding: 12px; border: 1px solid #ffffff38; border-radius: 10px; color: white; background: #ffffff12; }
+.worker-main { padding: clamp(28px, 5vw, 64px); }
+.worker-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 30px; margin-bottom: 38px; }
+.worker-header h1 { margin: 6px 0 10px; font-size: clamp(34px, 4vw, 50px); }
+.worker-header p { margin: 0; color: #6d687b; }
+.worker-eyebrow { color: #7548d1 !important; font-size: 12px; font-weight: 800; letter-spacing: .18em; }
+.worker-user { display: flex; align-items: center; gap: 10px; color: #5c566c; white-space: nowrap; }
+.worker-user img { width: 40px; height: 40px; border-radius: 50%; }
+.worker-dashboard { display: grid; grid-template-columns: repeat(2, minmax(230px, 1fr)); gap: 22px; }
+.worker-card { min-height: 220px; padding: 28px; display: flex; flex-direction: column; align-items: flex-start; gap: 14px; border: 1px solid #e4e0ec; border-radius: 18px; color: #2c2840; background: white; text-align: left; text-decoration: none; box-shadow: 0 12px 35px #3c31600d; transition: transform .2s, border-color .2s, box-shadow .2s; }
+.worker-card:hover { transform: translateY(-4px); border-color: #a98ce8; box-shadow: 0 18px 45px #3c316018; }
+.worker-card-icon { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 12px; background: #f0eafd; }
+.worker-card strong { font-size: 22px; }
+.worker-card > span:not(.worker-card-icon) { color: #716b7f; line-height: 1.6; }
+.worker-card small { margin-top: auto; color: #7041da; font-weight: 700; }
+@media (max-width: 850px) { .worker-page { grid-template-columns: 1fr; } .worker-sidebar { position: static; height: auto; } .worker-dashboard { grid-template-columns: 1fr; } .worker-header { flex-direction: column; } }
