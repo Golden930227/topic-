@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react"
 import {
   BrowserRouter,
+  Navigate,
+  Outlet,
   Route,
   Routes,
   useLocation,
@@ -11,92 +13,373 @@ import {
   signInWithPopup,
   signOut,
 } from "firebase/auth"
+import {
+  doc,
+  getDoc,
+} from "firebase/firestore"
 
-import { auth, googleProvider } from "./firebase.js"
+import {
+  auth,
+  db,
+  googleProvider,
+} from "./firebase.js"
+
 import ProtectedRoute from "./components/common/ProtectedRoute.jsx"
 import HomePage from "./pages/HomePage.jsx"
 import WorkerPage from "./pages/WorkerPage.jsx"
+import VisitorPage from "./pages/VisitorPage.jsx"
+import VisitorRegisterPage from "./pages/VisitorRegisterPage.jsx"
 import ReportPage from "./pages/ReportPage.jsx"
+
 import "./App.css"
+import "./pages/VisitorPages.css"
 
 const allowedEmails = [
   "g99226@gmail.com",
   "chenhongrui416@gmail.com",
   "p124826960@gmail.com",
 
-  // 請確認這個信箱是不是 gmaiil.com。
-  // 如果是一般 Gmail，應該改成 44o3249@gmail.com
+  // 請確認這個是不是拼錯。
+  // 如果是一般 Gmail，可能應為 44o3249@gmail.com
   "44o3249@gmaiil.com",
 
   "xindongh522@gmail.com",
 ]
 
-function AppRoutes() {
-  const [user, setUser] = useState(null)
-  const [authReady, setAuthReady] = useState(false)
+function isAllowedMember(email) {
+  const normalizedEmail =
+    email?.trim().toLowerCase()
 
-  const navigate = useNavigate()
+  return Boolean(
+    normalizedEmail &&
+    allowedEmails.includes(normalizedEmail)
+  )
+}
+
+async function getAccessStatus(currentUser) {
+  if (isAllowedMember(currentUser.email)) {
+    return "member"
+  }
+
+  const visitorDocument = await getDoc(
+    doc(db, "visitors", currentUser.uid)
+  )
+
+  return visitorDocument.exists()
+    ? "visitor"
+    : "missing"
+}
+
+function AccessLoading() {
+  return (
+    <main className="access-page">
+      <section className="access-card">
+        <h1>正在確認登入資料</h1>
+        <p>請稍候……</p>
+      </section>
+    </main>
+  )
+}
+
+function VisitorAccessGate({
+  user,
+  authReady,
+  accessStatus,
+}) {
   const location = useLocation()
 
+  if (
+    !authReady ||
+    (user && accessStatus === "checking")
+  ) {
+    return <AccessLoading />
+  }
+
+  if (!user) {
+    return (
+      <Navigate
+        to="/"
+        replace
+        state={{ from: location }}
+      />
+    )
+  }
+
+  if (
+    accessStatus === "member" ||
+    accessStatus === "visitor"
+  ) {
+    return <Outlet />
+  }
+
+  if (accessStatus === "missing") {
+    return (
+      <Navigate
+        to="/visitor-register"
+        replace
+      />
+    )
+  }
+
+  return (
+    <main className="access-page">
+      <section className="access-card">
+        <h1>無法確認訪客資料</h1>
+        <p>請重新整理頁面後再試一次。</p>
+      </section>
+    </main>
+  )
+}
+
+function WorkerAccessGate({
+  user,
+  authReady,
+  accessStatus,
+}) {
+  const location = useLocation()
+  const navigate = useNavigate()
+
+  if (
+    !authReady ||
+    (user && accessStatus === "checking")
+  ) {
+    return <AccessLoading />
+  }
+
+  if (!user) {
+    return (
+      <Navigate
+        to="/"
+        replace
+        state={{ from: location }}
+      />
+    )
+  }
+
+  /*
+   * /worker 只允許白名單中的 member。
+   * visitor 和 missing 都不能進入。
+   */
+  if (accessStatus === "member") {
+    return <Outlet />
+  }
+
+  if (accessStatus === "error") {
+    return (
+      <main className="access-page">
+        <section className="access-card">
+          <h1>無法確認工作人員權限</h1>
+          <p>請重新整理頁面後再試一次。</p>
+
+          <button
+            type="button"
+            className="primary-action"
+            onClick={() => {
+              navigate("/", { replace: true })
+            }}
+          >
+            返回首頁
+          </button>
+        </section>
+      </main>
+    )
+  }
+
+  return (
+    <main className="access-page">
+      <section className="access-card">
+        <h1>沒有工作人員權限</h1>
+
+        <p>
+          此頁面僅限專題成員使用。如需工作人員權限，
+          請聯絡管理員將你的 Google Email 加入白名單。
+        </p>
+
+        <button
+          type="button"
+          className="primary-action"
+          onClick={() => {
+            navigate("/", { replace: true })
+          }}
+        >
+          返回首頁
+        </button>
+      </section>
+    </main>
+  )
+}
+
+function AppRoutes() {
+  const [user, setUser] = useState(null)
+  const [authReady, setAuthReady] =
+    useState(false)
+
+  const [accessStatus, setAccessStatus] =
+    useState("signed-out")
+
+  const navigate = useNavigate()
+
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser)
-      setAuthReady(true)
-    })
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      (currentUser) => {
+        setUser(currentUser)
+        setAccessStatus(
+          currentUser
+            ? "checking"
+            : "signed-out"
+        )
+        setAuthReady(true)
+      }
+    )
 
     return unsubscribe
   }, [])
 
-  const onAuthButtonClick = async () => {
-    // 已登入時，按按鈕就是登出
+  useEffect(() => {
+    let cancelled = false
+
+    if (!user) {
+      return undefined
+    }
+
+    getAccessStatus(user)
+      .then((status) => {
+        if (!cancelled) {
+          setAccessStatus(status)
+        }
+      })
+      .catch((error) => {
+        console.error(
+          "確認登入權限失敗：",
+          error
+        )
+
+        if (!cancelled) {
+          setAccessStatus("error")
+        }
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [user])
+
+  const onAuthButtonClick = async (
+    loginMode = "member"
+  ) => {
+    /*
+     * 已登入時：
+     * - 按同組按鈕：登出
+     * - 按訪客按鈕：進訪客頁
+     */
     if (user) {
+      if (loginMode === "visitor") {
+        try {
+          const status =
+            await getAccessStatus(user)
+
+          setAccessStatus(status)
+
+          navigate(
+            status === "missing"
+              ? "/visitor-register"
+              : "/visitor",
+            { replace: true }
+          )
+        } catch (error) {
+          window.alert(
+            `確認訪客資料失敗：${error.message}`
+          )
+        }
+
+        return
+      }
+
       try {
         await signOut(auth)
         navigate("/", { replace: true })
       } catch (error) {
-        window.alert(`登出失敗：${error.message}`)
+        window.alert(
+          `登出失敗：${error.message}`
+        )
       }
 
       return
     }
 
     try {
-      const result = await signInWithPopup(auth, googleProvider)
+      const result = await signInWithPopup(
+        auth,
+        googleProvider
+      )
 
-      const loginEmail = result.user.email?.trim().toLowerCase()
+      const signedInUser = result.user
 
-      if (!loginEmail || !allowedEmails.includes(loginEmail)) {
-        await signOut(auth)
-        window.alert("此帳號沒有同組成員權限。")
+      setUser(signedInUser)
+
+      /*
+       * 同組登入：
+       * 必須存在 allowedEmails 白名單。
+       */
+      if (loginMode === "member") {
+        if (
+          !isAllowedMember(signedInUser.email)
+        ) {
+          await signOut(auth)
+
+          window.alert(
+            "此帳號沒有工作人員權限，請聯絡管理員。"
+          )
+
+          navigate("/", { replace: true })
+          return
+        }
+
+        setAccessStatus("member")
+
+        navigate("/worker", {
+          replace: true,
+        })
+
         return
       }
 
       /*
-       * 如果使用者原本直接開 /worker，
-       * ProtectedRoute 會把原始位置放進 location.state.from。
-       *
-       * 登入完成後，回到原本要開的頁面。
-       * 沒有原始位置時，預設進入 /worker。
+       * 訪客登入：
+       * 不在白名單也不會被拒絕。
+       * 第一次先註冊，之後直接進訪客頁。
        */
-      const destination =
-        location.state?.from?.pathname || "/worker"
+      const status = await getAccessStatus(
+        signedInUser
+      )
 
-      navigate(destination, {
-        replace: true,
-        state: null,
-      })
+      setAccessStatus(status)
+
+      navigate(
+        status === "missing"
+          ? "/visitor-register"
+          : "/visitor",
+        { replace: true }
+      )
     } catch (error) {
-      /*
-       * 使用者自己關掉 Google 登入視窗時，
-       * Firebase 可能回傳 popup-closed-by-user。
-       * 這種情況不需要顯示很長的錯誤。
-       */
-      if (error.code === "auth/popup-closed-by-user") {
+      if (
+        error.code ===
+          "auth/popup-closed-by-user" ||
+        error.code ===
+          "auth/cancelled-popup-request"
+      ) {
         return
       }
 
-      window.alert(`登入失敗：${error.message}`)
+      window.alert(
+        `登入失敗：${error.message}`
+      )
     }
+  }
+
+  const handleVisitorRegistered = () => {
+    setAccessStatus("visitor")
   }
 
   return (
@@ -106,7 +389,9 @@ function AppRoutes() {
         element={
           <HomePage
             user={user}
-            onAuthButtonClick={onAuthButtonClick}
+            onAuthButtonClick={
+              onAuthButtonClick
+            }
           />
         }
       />
@@ -125,23 +410,68 @@ function AppRoutes() {
         }
       >
         <Route
-          path="/worker"
+          path="/visitor-register"
           element={
-            <WorkerPage
+            <VisitorRegisterPage
               user={user}
-              onAuthButtonClick={onAuthButtonClick}
+              onRegistered={
+                handleVisitorRegistered
+              }
             />
           }
         />
+
+        <Route
+          element={
+            <VisitorAccessGate
+              user={user}
+              authReady={authReady}
+              accessStatus={accessStatus}
+            />
+          }
+        >
+          <Route
+            path="/visitor"
+            element={
+              <VisitorPage
+                user={user}
+                onAuthButtonClick={
+                  onAuthButtonClick
+                }
+              />
+            }
+          />
+        </Route>
+
+        <Route
+          element={
+            <WorkerAccessGate
+              user={user}
+              authReady={authReady}
+              accessStatus={accessStatus}
+            />
+          }
+        >
+          <Route
+            path="/worker"
+            element={
+              <WorkerPage
+                user={user}
+                onAuthButtonClick={
+                  onAuthButtonClick
+                }
+              />
+            }
+          />
+        </Route>
       </Route>
 
-      {/* 打錯網址時回首頁 */}
       <Route
         path="*"
         element={
-          <HomePage
-            user={user}
-            onAuthButtonClick={onAuthButtonClick}
+          <Navigate
+            to="/"
+            replace
           />
         }
       />

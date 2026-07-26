@@ -1,14 +1,29 @@
-import { useEffect, useRef, useState } from "react"
-import { Link } from "react-router-dom"
+import {
+  useEffect,
+  useRef,
+  useState,
+} from "react"
+
 import Logo from "../common/Logo.jsx"
 import { openCnnMonitor } from "../../utils/openCnnMonitor.js"
 
-function Navbar({ user, onAuthButtonClick }) {
-  const [openMenu, setOpenMenu] = useState(null)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+function Navbar({
+  user,
+  onAuthButtonClick,
+}) {
+  const [openMenu, setOpenMenu] =
+    useState(null)
+
+  const [
+    mobileMenuOpen,
+    setMobileMenuOpen,
+  ] = useState(false)
+
   const navbarRef = useRef(null)
 
-  const closeMenu = () => setOpenMenu(null)
+  const closeMenu = () => {
+    setOpenMenu(null)
+  }
 
   function closeMobileMenu() {
     setMobileMenuOpen(false)
@@ -17,20 +32,35 @@ function Navbar({ user, onAuthButtonClick }) {
 
   useEffect(() => {
     const closeOnOutsideClick = (event) => {
-      if (navbarRef.current && !navbarRef.current.contains(event.target)) {
+      if (
+        navbarRef.current &&
+        !navbarRef.current.contains(
+          event.target
+        )
+      ) {
         setOpenMenu(null)
         setMobileMenuOpen(false)
       }
     }
 
-    document.addEventListener("mousedown", closeOnOutsideClick)
+    document.addEventListener(
+      "mousedown",
+      closeOnOutsideClick
+    )
 
     return () => {
-      document.removeEventListener("mousedown", closeOnOutsideClick)
+      document.removeEventListener(
+        "mousedown",
+        closeOnOutsideClick
+      )
     }
   }, [])
 
-  const dropdown = (name, label, children) => (
+  const dropdown = (
+    name,
+    label,
+    children
+  ) => (
     <div className="small-dropdown">
       <button
         type="button"
@@ -38,38 +68,65 @@ function Navbar({ user, onAuthButtonClick }) {
           openMenu === name ? "active" : ""
         }`}
         onClick={() => {
-          setOpenMenu(openMenu === name ? null : name)
+          setOpenMenu(
+            openMenu === name ? null : name
+          )
         }}
         aria-expanded={openMenu === name}
       >
         {label}
-        <span className="dropdown-arrow">⌄</span>
+
+        <span className="dropdown-arrow">
+          ⌄
+        </span>
       </button>
 
       {openMenu === name && (
-        <div className="small-dropdown-menu">{children}</div>
+        <div className="small-dropdown-menu">
+          {children}
+        </div>
       )}
     </div>
   )
 
-  const handleAuthClick = async (event) => {
+  const handleMemberClick = async (
+    event
+  ) => {
     event.preventDefault()
     event.stopPropagation()
 
     try {
-      await onAuthButtonClick()
+      await onAuthButtonClick("member")
     } finally {
-      setOpenMenu(null)
+      closeMenu()
+    }
+  }
+
+  const handleVisitorClick = async (
+    event
+  ) => {
+    event.preventDefault()
+    event.stopPropagation()
+
+    try {
+      await onAuthButtonClick("visitor")
+    } finally {
+      closeMobileMenu()
     }
   }
 
   return (
-    <header className="navbar" ref={navbarRef}>
+    <header
+      className="navbar"
+      ref={navbarRef}
+    >
       <Logo />
 
       <nav
         className={`main-nav ${
-          mobileMenuOpen ? "mobile-menu-open" : ""
+          mobileMenuOpen
+            ? "mobile-menu-open"
+            : ""
         }`}
         onClick={(event) => {
           if (event.target.closest("a")) {
@@ -123,48 +180,62 @@ function Navbar({ user, onAuthButtonClick }) {
               CNN監測
             </a>
 
-            <a href="/report" onClick={closeMenu}>
+            <a
+              href="/report"
+              onClick={closeMenu}
+            >
               問題回報
             </a>
           </>
         )}
 
         <a
-          href="https://ee.nfu.edu.tw/zh_tw/teacher01/faculty/%E7%8E%8B%E9%B3%B4%E7%AB%8B-Ming-Li-Wang-77332159"
+          href="https://ee.nfu.edu.tw/zh_tw/teacher01/faculty/%E7%8E%8B%E9%B4%B4%E7%AB%8B-Ming-Li-Wang-77332159"
           target="_blank"
           rel="noreferrer"
         >
           專題教授
         </a>
 
-        <a href="#references">參考資料</a>
+        <a href="#references">
+          參考資料
+        </a>
       </nav>
 
       <div className="actions">
         <button
           type="button"
           className="login"
-          onClick={handleAuthClick}
+          onClick={handleMemberClick}
         >
           {user ? "登出" : "同組登入"}
         </button>
 
-        <Link
+        <button
+          type="button"
           className="start"
-          to="/worker"
-          onClick={closeMobileMenu}
+          onClick={handleVisitorClick}
         >
-          Get started
-        </Link>
+          {user
+            ? "進入訪客頁"
+            : "訪客登入"}
+        </button>
       </div>
 
       <button
         type="button"
         className="mobile-menu-toggle"
-        aria-label={mobileMenuOpen ? "關閉導覽選單" : "開啟導覽選單"}
+        aria-label={
+          mobileMenuOpen
+            ? "關閉導覽選單"
+            : "開啟導覽選單"
+        }
         aria-expanded={mobileMenuOpen}
         onClick={() => {
-          setMobileMenuOpen((isOpen) => !isOpen)
+          setMobileMenuOpen(
+            (isOpen) => !isOpen
+          )
+
           setOpenMenu(null)
         }}
       >
