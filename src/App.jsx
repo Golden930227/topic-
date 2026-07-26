@@ -224,11 +224,6 @@ function AppRoutes() {
       auth,
       (currentUser) => {
         setUser(currentUser)
-        setAccessStatus(
-          currentUser
-            ? "checking"
-            : "signed-out"
-        )
         setAuthReady(true)
       }
     )
@@ -240,8 +235,11 @@ function AppRoutes() {
     let cancelled = false
 
     if (!user) {
+      setAccessStatus("signed-out")
       return undefined
     }
+
+    setAccessStatus("checking")
 
     getAccessStatus(user)
       .then((status) => {

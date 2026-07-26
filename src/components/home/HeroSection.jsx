@@ -8,17 +8,11 @@ function HeroSection() {
       <img
         src={windBg}
         className="home-hero-bg"
-        alt=""
+        alt="風力發電機組"
       />
-
-      <div className="home-hero-overlay" />
 
       <div className="home-hero-layout">
         <section className="home-hero-text">
-          <p className="home-hero-eyebrow">
-            SMART WIND ENERGY
-          </p>
-
           <h1>
             <span className="hero-title-main">
               智能風力發電機
@@ -29,8 +23,9 @@ function HeroSection() {
             </span>
           </h1>
 
-          <p className="home-hero-description">
-            整合智慧感測、機械學習系統，提供風力發電設備的工作入口與專題成果展示。
+          <p>
+            整合智慧感測、機械學習系統，
+            提供風力發電設備的工作入口與專題成果展示。
           </p>
 
           <a
@@ -44,7 +39,7 @@ function HeroSection() {
           </a>
         </section>
 
-        <ImageCarousel className="home-carousel" />
+        <ImageCarousel />
       </div>
     </main>
   )
