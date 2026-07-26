@@ -217,24 +217,49 @@
   line-height: 1.8;
 }
 
-.github-btn {
+.customer-service-btn {
+  min-width: 100px;
+  min-height: 44px;
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
   margin-top: 30px;
-  padding: 13px 28px;
-  border-radius: 10px;
+  padding: 11px 28px;
+  border: 0;
+  border-radius: 9px;
   color: white;
-  background: #7b4be8;
-  font-size: 20px;
+  background: linear-gradient(
+    90deg,
+    #6431dc 0%,
+    #9749f2 100%
+  );
+  box-shadow:
+    0 8px 20px #6f3de840,
+    inset 10px 0 14px #37159c59;
+  font-family: inherit;
+  font-size: 18px;
   font-weight: 700;
-  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.github-btn .app-icon {
-  filter: invert(1);
+.customer-service-btn:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 11px 24px #6f3de852,
+    inset 10px 0 14px #37159c59;
 }
 
+.customer-service-btn:active {
+  transform: translateY(0);
+}
+
+.customer-service-btn:focus-visible {
+  outline: 3px solid #b99cff;
+  outline-offset: 3px;
+}
 /* =====================================================
    Image Carousel
 ===================================================== */
@@ -499,13 +524,11 @@
     overflow-wrap: anywhere;
   }
 
-  .github-btn {
-    width: 100%;
-    max-width: 280px;
-    min-height: 44px;
-    justify-content: center;
-    box-sizing: border-box;
-  }
+  .customer-service-btn {
+  width: 100%;
+  max-width: 280px;
+  min-height: 44px;
+}
 }
 
 /* =====================================================

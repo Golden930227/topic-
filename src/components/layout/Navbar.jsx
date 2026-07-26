@@ -3,6 +3,7 @@ import {
   useRef,
   useState,
 } from "react"
+import { useLocation } from "react-router-dom"
 
 import Logo from "../common/Logo.jsx"
 import { openCnnMonitor } from "../../utils/openCnnMonitor.js"
@@ -20,6 +21,14 @@ function Navbar({
   ] = useState(false)
 
   const navbarRef = useRef(null)
+  const location = useLocation()
+
+  /*
+   * 只有真正進入 /visitor 時，
+   * 才顯示智慧感測器和 CNN 選單。
+   */
+  const isVisitorPage =
+    location.pathname === "/visitor"
 
   const closeMenu = () => {
     setOpenMenu(null)
@@ -142,50 +151,55 @@ function Navbar({
           整體方塊圖
         </a>
 
-        {dropdown(
-          "sensor",
-          "智慧感測器",
+        {/* 只有訪客頁顯示這兩個選單 */}
+        {isVisitorPage && (
           <>
-            <a
-              href="http://localhost:8501"
-              target="_blank"
-              rel="noreferrer"
-              onClick={closeMenu}
-            >
-              智慧感測器
-            </a>
+            {dropdown(
+              "sensor",
+              "智慧感測器",
+              <>
+                <a
+                  href="http://localhost:8501"
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={closeMenu}
+                >
+                  智慧感測器
+                </a>
 
-            <a
-              href="http://localhost:8502"
-              target="_blank"
-              rel="noreferrer"
-              onClick={closeMenu}
-            >
-              人工智能模型
-            </a>
-          </>
-        )}
+                <a
+                  href="http://localhost:8502"
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={closeMenu}
+                >
+                  人工智能模型
+                </a>
+              </>
+            )}
 
-        {dropdown(
-          "cnn",
-          "CNN監測與問題回報",
-          <>
-            <a
-              href="#cnn-monitor"
-              onClick={(event) => {
-                closeMenu()
-                openCnnMonitor(event)
-              }}
-            >
-              CNN監測
-            </a>
+            {dropdown(
+              "cnn",
+              "CNN監測與問題回報",
+              <>
+                <a
+                  href="#cnn-monitor"
+                  onClick={(event) => {
+                    closeMenu()
+                    openCnnMonitor(event)
+                  }}
+                >
+                  CNN監測
+                </a>
 
-            <a
-              href="/report"
-              onClick={closeMenu}
-            >
-              問題回報
-            </a>
+                <a
+                  href="/report"
+                  onClick={closeMenu}
+                >
+                  問題回報
+                </a>
+              </>
+            )}
           </>
         )}
 

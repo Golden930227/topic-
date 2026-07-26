@@ -1,8 +1,14 @@
 import windBg from "../../assets/wind-bg.jpg"
-import Icon from "../common/Icon.jsx"
+
 import ImageCarousel from "../common/ImageCarousel.jsx"
 
 function HeroSection() {
+  function handleCustomerServiceClick() {
+    window.alert(
+      "客服功能建置中，下一步將接上固定 FAQ 聊天視窗。"
+    )
+  }
+
   return (
     <main className="home-hero">
       <img
@@ -28,15 +34,15 @@ function HeroSection() {
             提供風力發電設備的工作入口與專題成果展示。
           </p>
 
-          <a
-            className="github-btn"
-            href="https://github.com/Golden930227/topic-"
-            target="_blank"
-            rel="noreferrer"
+          <button
+            type="button"
+            className="customer-service-btn"
+            onClick={
+              handleCustomerServiceClick
+            }
           >
-            <Icon name="github" />
-            GitHub
-          </a>
+            客服
+          </button>
         </section>
 
         <ImageCarousel />
