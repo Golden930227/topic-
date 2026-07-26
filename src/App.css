@@ -150,16 +150,26 @@
 .home-hero-layout {
   position: relative;
   z-index: 1;
-  width: min(calc(100% - 64px), 1400px);
+
+  width: calc(100% - 160px);
+  max-width: none;
   min-height: calc(100vh - 84px);
+
   margin: 0 auto;
-  padding: 26px 0;
+  padding:
+    clamp(48px, 9vh, 92px)
+    0
+    32px;
+
+  box-sizing: border-box;
+
   display: grid;
   grid-template-columns:
-    minmax(320px, 0.8fr)
-    minmax(0, 1.2fr);
-  align-items: center;
-  gap: 64px;
+    minmax(0, 580px)
+    minmax(0, 1fr);
+
+  gap: clamp(100px, 14vw, 270px);
+  align-items: start;
 }
 
 .home-hero-text {
@@ -168,12 +178,15 @@
   margin: 0;
   padding: 48px;
   transform: none;
+  box-sizing: border-box;
   border-radius: 20px;
   background: #ffffffb8;
   backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
 }
 
 .home-hero-text h1 {
+  margin: 0;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -181,9 +194,11 @@
 
 .hero-title-main {
   display: block;
-  font-size: 68px;
+  font-size: clamp(48px, 3vw, 58px);
   font-weight: 800;
   line-height: 1.05;
+  letter-spacing: -0.04em;
+  white-space: nowrap;
 }
 
 .hero-title-sub {
@@ -194,6 +209,7 @@
 }
 
 .home-hero-text p {
+  margin: 26px 0 0;
   padding-left: 14px;
   border-left: 5px solid #7b4be8;
   color: #4a5568;
@@ -221,7 +237,6 @@
 
 /* =====================================================
    Image Carousel
-   配合舊版 ImageCarousel.jsx
 ===================================================== */
 
 .image-carousel {
@@ -234,7 +249,8 @@
 .image-carousel-empty {
   position: relative;
   width: 100%;
-  aspect-ratio: 4 / 3;
+  height: clamp(480px, 58vh, 620px);
+  aspect-ratio: auto;
   overflow: hidden;
   border-radius: 20px;
   background: #dcecf2;
@@ -299,6 +315,26 @@
 }
 
 /* =====================================================
+   Medium Desktop <= 1400px
+===================================================== */
+
+@media (max-width: 1400px) {
+  .home-hero-layout {
+    width: calc(100% - 64px);
+
+    grid-template-columns:
+      minmax(420px, 0.8fr)
+      minmax(0, 1.2fr);
+
+    gap: 48px;
+  }
+
+  .hero-title-main {
+    font-size: clamp(44px, 4vw, 56px);
+  }
+}
+
+/* =====================================================
    Hero Tablet Layout <= 850px
 ===================================================== */
 
@@ -318,6 +354,7 @@
 
   .image-carousel-viewport,
   .image-carousel-empty {
+    height: auto;
     aspect-ratio: 4 / 3;
   }
 }
@@ -338,6 +375,7 @@
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 12px;
+    box-sizing: border-box;
   }
 
   .navbar .brand {
@@ -395,6 +433,7 @@
     justify-content: space-between;
     text-align: left;
     white-space: normal;
+    box-sizing: border-box;
   }
 
   .small-dropdown {
@@ -408,6 +447,7 @@
     max-width: 100%;
     margin-top: 4px;
     box-shadow: none;
+    box-sizing: border-box;
   }
 
   .small-dropdown-menu a {
@@ -446,6 +486,7 @@
   .hero-title-main {
     font-size: clamp(36px, 10vw, 54px);
     overflow-wrap: normal;
+    white-space: normal;
   }
 
   .hero-title-sub {
@@ -463,6 +504,7 @@
     max-width: 280px;
     min-height: 44px;
     justify-content: center;
+    box-sizing: border-box;
   }
 }
 
