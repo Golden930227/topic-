@@ -27,7 +27,6 @@ import {
 import ProtectedRoute from "./components/common/ProtectedRoute.jsx"
 import HomePage from "./pages/HomePage.jsx"
 import WorkerPage from "./pages/WorkerPage.jsx"
-import VisitorPage from "./pages/VisitorPage.jsx"
 import VisitorRegisterPage from "./pages/VisitorRegisterPage.jsx"
 import ReportPage from "./pages/ReportPage.jsx"
 
@@ -175,7 +174,9 @@ function WorkerAccessGate({
             type="button"
             className="primary-action"
             onClick={() => {
-              navigate("/", { replace: true })
+              navigate("/", {
+                replace: true,
+              })
             }}
           >
             返回首頁
@@ -199,7 +200,9 @@ function WorkerAccessGate({
           type="button"
           className="primary-action"
           onClick={() => {
-            navigate("/", { replace: true })
+            navigate("/", {
+              replace: true,
+            })
           }}
         >
           返回首頁
@@ -211,6 +214,7 @@ function WorkerAccessGate({
 
 function AppRoutes() {
   const [user, setUser] = useState(null)
+
   const [authReady, setAuthReady] =
     useState(false)
 
@@ -283,7 +287,9 @@ function AppRoutes() {
             status === "missing"
               ? "/visitor-register"
               : "/visitor",
-            { replace: true }
+            {
+              replace: true,
+            }
           )
         } catch (error) {
           window.alert(
@@ -296,7 +302,10 @@ function AppRoutes() {
 
       try {
         await signOut(auth)
-        navigate("/", { replace: true })
+
+        navigate("/", {
+          replace: true,
+        })
       } catch (error) {
         window.alert(
           `登出失敗：${error.message}`
@@ -322,7 +331,9 @@ function AppRoutes() {
        */
       if (loginMode === "member") {
         if (
-          !isAllowedMember(signedInUser.email)
+          !isAllowedMember(
+            signedInUser.email
+          )
         ) {
           await signOut(auth)
 
@@ -330,7 +341,10 @@ function AppRoutes() {
             "此帳號沒有工作人員權限，請聯絡管理員。"
           )
 
-          navigate("/", { replace: true })
+          navigate("/", {
+            replace: true,
+          })
+
           return
         }
 
@@ -358,7 +372,9 @@ function AppRoutes() {
         status === "missing"
           ? "/visitor-register"
           : "/visitor",
-        { replace: true }
+        {
+          replace: true,
+        }
       )
     } catch (error) {
       if (
@@ -431,7 +447,7 @@ function AppRoutes() {
           <Route
             path="/visitor"
             element={
-              <VisitorPage
+              <HomePage
                 user={user}
                 onAuthButtonClick={
                   onAuthButtonClick
