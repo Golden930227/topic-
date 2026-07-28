@@ -3,12 +3,6 @@ import windBg from "../../assets/wind-bg.jpg"
 import ImageCarousel from "../common/ImageCarousel.jsx"
 
 function HeroSection() {
-  function handleCustomerServiceClick() {
-    window.alert(
-      "客服功能建置中，下一步將接上固定 FAQ 聊天視窗。"
-    )
-  }
-
   return (
     <main className="home-hero">
       <img
@@ -34,15 +28,15 @@ function HeroSection() {
             提供風力發電設備的工作入口與專題成果展示。
           </p>
 
-          <button
-            type="button"
+          <a
             className="customer-service-btn"
-            onClick={
-              handleCustomerServiceClick
-            }
+            href="https://lin.ee/VImRwnH"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="使用 LINE 聯絡專題客服"
           >
             客服
-          </button>
+          </a>
         </section>
 
         <ImageCarousel />
