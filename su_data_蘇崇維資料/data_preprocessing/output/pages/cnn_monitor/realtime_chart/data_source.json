@@ -1,0 +1,13 @@
+{
+  "page_id": "cnn_monitor",
+  "page_label": "CNN監測",
+  "feature_id": "realtime_chart",
+  "feature_label": "即時曲線",
+  "available": false,
+  "status": "目前缺少資料來源",
+  "source_routes": [],
+  "source_files": [],
+  "required_columns": [],
+  "selection": "目前沒有即時來源；tblGrid CSV 只能做歷史回放",
+  "sample_files": []
+}

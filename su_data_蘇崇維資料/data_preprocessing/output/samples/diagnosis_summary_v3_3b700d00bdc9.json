@@ -1,0 +1,72 @@
+{
+  "source_file": "D:\\蘇崇維\\讀取結果\\tblGrid_predict_v3\\diagnosis_summary_v3.csv",
+  "encoding": "utf-8-sig",
+  "columns": [
+    "summary_type",
+    "result",
+    "count",
+    "percentage"
+  ],
+  "sample_rows": [
+    {
+      "summary_type": "final_result",
+      "result": "正常",
+      "count": "83214",
+      "percentage": "0.9505391574522526"
+    },
+    {
+      "summary_type": "final_result",
+      "result": "不確定（信心不足）",
+      "count": "2940",
+      "percentage": "0.03358311249200402"
+    },
+    {
+      "summary_type": "final_result",
+      "result": "負載／電流突升",
+      "count": "799",
+      "percentage": "0.009126839075207895"
+    },
+    {
+      "summary_type": "final_result",
+      "result": "需複核（未達連續確認）",
+      "count": "363",
+      "percentage": "0.004146486338298456"
+    },
+    {
+      "summary_type": "final_result",
+      "result": "需複核（未達物理門檻）",
+      "count": "228",
+      "percentage": "0.0026044046422370464"
+    },
+    {
+      "summary_type": "raw_model_prediction",
+      "result": "正常",
+      "count": "85037",
+      "percentage": "0.9713629717627708"
+    },
+    {
+      "summary_type": "raw_model_prediction",
+      "result": "負載／電流突升",
+      "count": "2416",
+      "percentage": "0.027597550945810106"
+    },
+    {
+      "summary_type": "raw_model_prediction",
+      "result": "電壓異常下降",
+      "count": "91",
+      "percentage": "0.001039477291419172"
+    },
+    {
+      "summary_type": "overall",
+      "result": "total_windows",
+      "count": "87544",
+      "percentage": "1.0"
+    },
+    {
+      "summary_type": "overall",
+      "result": "physical_gate_candidates",
+      "count": "1162",
+      "percentage": "0.013273325413506351"
+    }
+  ]
+}

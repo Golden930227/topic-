@@ -1,0 +1,63 @@
+{
+  "page_id": "cnn_monitor",
+  "page_label": "CNN監測",
+  "feature_id": "three_phase_voltage",
+  "feature_label": "三相電壓",
+  "available": true,
+  "status": "可使用",
+  "source_routes": [
+    "cnn_measurements"
+  ],
+  "source_files": [
+    "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2023_01.csv",
+    "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2023_02.csv",
+    "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2023_03.csv",
+    "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2023_04.csv",
+    "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2023_05.csv",
+    "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2023_06.csv",
+    "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2023_07.csv",
+    "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2023_08.csv",
+    "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2023_09.csv",
+    "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2023_10.csv",
+    "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2023_11.csv",
+    "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2023_12.csv",
+    "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2024_01.csv",
+    "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2024_02.csv",
+    "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2024_03.csv",
+    "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2024_04.csv",
+    "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2024_05.csv",
+    "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2024_06.csv",
+    "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2024_07.csv",
+    "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2024_08.csv"
+  ],
+  "required_columns": [
+    "TimeStamp",
+    "Station",
+    "VoltageL1",
+    "VoltageL2",
+    "VoltageL3"
+  ],
+  "selection": "依 TimeStamp 讀取指定時間範圍",
+  "sample_files": [
+    "C:\\Users\\admin\\Downloads\\topic\\topic_website\\Mr_SU\\data_preprocessing\\output\\samples\\tblGrid_2023_01_04e7adb1c299.json",
+    "C:\\Users\\admin\\Downloads\\topic\\topic_website\\Mr_SU\\data_preprocessing\\output\\samples\\tblGrid_2023_02_1585d3976ccf.json",
+    "C:\\Users\\admin\\Downloads\\topic\\topic_website\\Mr_SU\\data_preprocessing\\output\\samples\\tblGrid_2023_03_943706f3534e.json",
+    "C:\\Users\\admin\\Downloads\\topic\\topic_website\\Mr_SU\\data_preprocessing\\output\\samples\\tblGrid_2023_04_3b2a062f1961.json",
+    "C:\\Users\\admin\\Downloads\\topic\\topic_website\\Mr_SU\\data_preprocessing\\output\\samples\\tblGrid_2023_05_dfe3d689dded.json",
+    "C:\\Users\\admin\\Downloads\\topic\\topic_website\\Mr_SU\\data_preprocessing\\output\\samples\\tblGrid_2023_06_8440a3b25311.json",
+    "C:\\Users\\admin\\Downloads\\topic\\topic_website\\Mr_SU\\data_preprocessing\\output\\samples\\tblGrid_2023_07_856f5e0e874e.json",
+    "C:\\Users\\admin\\Downloads\\topic\\topic_website\\Mr_SU\\data_preprocessing\\output\\samples\\tblGrid_2023_08_88cb36e05c99.json",
+    "C:\\Users\\admin\\Downloads\\topic\\topic_website\\Mr_SU\\data_preprocessing\\output\\samples\\tblGrid_2023_09_d35d74ed63d7.json",
+    "C:\\Users\\admin\\Downloads\\topic\\topic_website\\Mr_SU\\data_preprocessing\\output\\samples\\tblGrid_2023_10_204619f87a3d.json",
+    "C:\\Users\\admin\\Downloads\\topic\\topic_website\\Mr_SU\\data_preprocessing\\output\\samples\\tblGrid_2023_11_141e70fcd4aa.json",
+    "C:\\Users\\admin\\Downloads\\topic\\topic_website\\Mr_SU\\data_preprocessing\\output\\samples\\tblGrid_2023_12_bf6bbeb83c2b.json",
+    "C:\\Users\\admin\\Downloads\\topic\\topic_website\\Mr_SU\\data_preprocessing\\output\\samples\\tblGrid_2024_01_a00b854990a0.json",
+    "C:\\Users\\admin\\Downloads\\topic\\topic_website\\Mr_SU\\data_preprocessing\\output\\samples\\tblGrid_2024_02_f7e7196714fa.json",
+    "C:\\Users\\admin\\Downloads\\topic\\topic_website\\Mr_SU\\data_preprocessing\\output\\samples\\tblGrid_2024_03_1ac1976aa339.json",
+    "C:\\Users\\admin\\Downloads\\topic\\topic_website\\Mr_SU\\data_preprocessing\\output\\samples\\tblGrid_2024_04_34d13d5c1f12.json",
+    "C:\\Users\\admin\\Downloads\\topic\\topic_website\\Mr_SU\\data_preprocessing\\output\\samples\\tblGrid_2024_05_e92ffd178195.json",
+    "C:\\Users\\admin\\Downloads\\topic\\topic_website\\Mr_SU\\data_preprocessing\\output\\samples\\tblGrid_2024_06_ecadd6d23def.json",
+    "C:\\Users\\admin\\Downloads\\topic\\topic_website\\Mr_SU\\data_preprocessing\\output\\samples\\tblGrid_2024_07_2c8e17b778e4.json",
+    "C:\\Users\\admin\\Downloads\\topic\\topic_website\\Mr_SU\\data_preprocessing\\output\\samples\\tblGrid_2024_08_27738a62d7d0.json"
+  ]
+}

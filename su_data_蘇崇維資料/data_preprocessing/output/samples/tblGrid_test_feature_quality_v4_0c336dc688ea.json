@@ -1,0 +1,138 @@
+{
+  "source_file": "D:\\蘇崇維\\讀取結果\\tblGrid_test_v4\\tblGrid_test_feature_quality_v4.csv",
+  "encoding": "utf-8-sig",
+  "columns": [
+    "class_id",
+    "class_name_zh",
+    "feature_index",
+    "feature_name",
+    "clip_value",
+    "clip_rate",
+    "minimum",
+    "maximum",
+    "mean",
+    "standard_deviation"
+  ],
+  "sample_rows": [
+    {
+      "class_id": "0",
+      "class_name_zh": "正常",
+      "feature_index": "0",
+      "feature_name": "VoltageL1_relative_5pct",
+      "clip_value": "20.0",
+      "clip_rate": "0.0",
+      "minimum": "-0.4060482978820801",
+      "maximum": "0.4417753219604492",
+      "mean": "0.034126315265893936",
+      "standard_deviation": "0.14556129276752472"
+    },
+    {
+      "class_id": "0",
+      "class_name_zh": "正常",
+      "feature_index": "1",
+      "feature_name": "VoltageL2_relative_5pct",
+      "clip_value": "20.0",
+      "clip_rate": "0.0",
+      "minimum": "-0.44496774673461914",
+      "maximum": "0.5077767372131348",
+      "mean": "0.040519606322050095",
+      "standard_deviation": "0.17665940523147583"
+    },
+    {
+      "class_id": "0",
+      "class_name_zh": "正常",
+      "feature_index": "2",
+      "feature_name": "VoltageL3_relative_5pct",
+      "clip_value": "20.0",
+      "clip_rate": "0.0",
+      "minimum": "-0.4332268238067627",
+      "maximum": "0.4464149475097656",
+      "mean": "0.031019270420074463",
+      "standard_deviation": "0.1504586935043335"
+    },
+    {
+      "class_id": "0",
+      "class_name_zh": "正常",
+      "feature_index": "3",
+      "feature_name": "CurrentL1_log_robust",
+      "clip_value": "8.0",
+      "clip_rate": "0.0",
+      "minimum": "-1.9585105180740356",
+      "maximum": "0.8534212112426758",
+      "mean": "-0.36675870418548584",
+      "standard_deviation": "0.5773555636405945"
+    },
+    {
+      "class_id": "0",
+      "class_name_zh": "正常",
+      "feature_index": "4",
+      "feature_name": "CurrentL2_log_robust",
+      "clip_value": "8.0",
+      "clip_rate": "0.0",
+      "minimum": "-1.8457106351852417",
+      "maximum": "0.848783552646637",
+      "mean": "-0.37099093198776245",
+      "standard_deviation": "0.576629102230072"
+    },
+    {
+      "class_id": "0",
+      "class_name_zh": "正常",
+      "feature_index": "5",
+      "feature_name": "CurrentL3_log_robust",
+      "clip_value": "8.0",
+      "clip_rate": "0.0",
+      "minimum": "-1.875001072883606",
+      "maximum": "0.8493304252624512",
+      "mean": "-0.36650633811950684",
+      "standard_deviation": "0.5733504891395569"
+    },
+    {
+      "class_id": "0",
+      "class_name_zh": "正常",
+      "feature_index": "6",
+      "feature_name": "VoltageL1_delta",
+      "clip_value": "12.0",
+      "clip_rate": "0.0",
+      "minimum": "-0.23608684539794922",
+      "maximum": "0.22928833961486816",
+      "mean": "-5.94000011915341e-05",
+      "standard_deviation": "0.02659340761601925"
+    },
+    {
+      "class_id": "0",
+      "class_name_zh": "正常",
+      "feature_index": "7",
+      "feature_name": "VoltageL2_delta",
+      "clip_value": "12.0",
+      "clip_rate": "0.0",
+      "minimum": "-0.285947322845459",
+      "maximum": "0.25283098220825195",
+      "mean": "-9.025191684486344e-05",
+      "standard_deviation": "0.026307467371225357"
+    },
+    {
+      "class_id": "0",
+      "class_name_zh": "正常",
+      "feature_index": "8",
+      "feature_name": "VoltageL3_delta",
+      "clip_value": "12.0",
+      "clip_rate": "0.0",
+      "minimum": "-0.26091575622558594",
+      "maximum": "0.25485754013061523",
+      "mean": "-4.608697418007068e-05",
+      "standard_deviation": "0.02624049223959446"
+    },
+    {
+      "class_id": "0",
+      "class_name_zh": "正常",
+      "feature_index": "9",
+      "feature_name": "CurrentL1_delta",
+      "clip_value": "8.0",
+      "clip_rate": "0.0",
+      "minimum": "-1.6006524562835693",
+      "maximum": "1.727036476135254",
+      "mean": "0.0002708706015255302",
+      "standard_deviation": "0.18154533207416534"
+    }
+  ]
+}

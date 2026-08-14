@@ -1,0 +1,127 @@
+{
+  "source_file": "D:\\蘇崇維\\讀取結果\\detected_event_groups_v2.csv",
+  "encoding": "utf-8-sig",
+  "columns": [
+    "station",
+    "event_group",
+    "first_detection_time",
+    "last_detection_time",
+    "detection_count",
+    "dominant_class",
+    "maximum_confidence",
+    "start_source_file",
+    "end_source_file"
+  ],
+  "sample_rows": [
+    {
+      "station": "91",
+      "event_group": "1",
+      "first_detection_time": "2023-01-06 23:30:00",
+      "last_detection_time": "2023-01-06 23:30:00",
+      "detection_count": "1",
+      "dominant_class": "負載突升",
+      "maximum_confidence": "0.8374281525611877",
+      "start_source_file": "tblGrid_2023_01.csv",
+      "end_source_file": "tblGrid_2023_01.csv"
+    },
+    {
+      "station": "91",
+      "event_group": "2",
+      "first_detection_time": "2023-01-06 23:50:00",
+      "last_detection_time": "2023-01-06 23:50:00",
+      "detection_count": "1",
+      "dominant_class": "負載突升",
+      "maximum_confidence": "0.8292716145515442",
+      "start_source_file": "tblGrid_2023_01.csv",
+      "end_source_file": "tblGrid_2023_01.csv"
+    },
+    {
+      "station": "91",
+      "event_group": "3",
+      "first_detection_time": "2023-01-07 01:40:00",
+      "last_detection_time": "2023-01-07 01:40:00",
+      "detection_count": "1",
+      "dominant_class": "負載突升",
+      "maximum_confidence": "0.8968878388404846",
+      "start_source_file": "tblGrid_2023_01.csv",
+      "end_source_file": "tblGrid_2023_01.csv"
+    },
+    {
+      "station": "91",
+      "event_group": "4",
+      "first_detection_time": "2023-01-07 02:00:00",
+      "last_detection_time": "2023-01-07 02:00:00",
+      "detection_count": "1",
+      "dominant_class": "負載突升",
+      "maximum_confidence": "0.8014978766441345",
+      "start_source_file": "tblGrid_2023_01.csv",
+      "end_source_file": "tblGrid_2023_01.csv"
+    },
+    {
+      "station": "91",
+      "event_group": "5",
+      "first_detection_time": "2023-01-07 12:20:00",
+      "last_detection_time": "2023-01-07 12:20:00",
+      "detection_count": "1",
+      "dominant_class": "負載突升",
+      "maximum_confidence": "0.8290373086929321",
+      "start_source_file": "tblGrid_2023_01.csv",
+      "end_source_file": "tblGrid_2023_01.csv"
+    },
+    {
+      "station": "91",
+      "event_group": "6",
+      "first_detection_time": "2023-01-07 12:40:00",
+      "last_detection_time": "2023-01-07 12:40:00",
+      "detection_count": "1",
+      "dominant_class": "負載突升",
+      "maximum_confidence": "0.87274169921875",
+      "start_source_file": "tblGrid_2023_01.csv",
+      "end_source_file": "tblGrid_2023_01.csv"
+    },
+    {
+      "station": "91",
+      "event_group": "7",
+      "first_detection_time": "2023-01-07 13:00:00",
+      "last_detection_time": "2023-01-07 13:00:00",
+      "detection_count": "1",
+      "dominant_class": "負載突升",
+      "maximum_confidence": "0.8879930377006531",
+      "start_source_file": "tblGrid_2023_01.csv",
+      "end_source_file": "tblGrid_2023_01.csv"
+    },
+    {
+      "station": "91",
+      "event_group": "8",
+      "first_detection_time": "2023-01-07 14:20:00",
+      "last_detection_time": "2023-01-07 14:20:00",
+      "detection_count": "1",
+      "dominant_class": "負載突升",
+      "maximum_confidence": "0.8062984943389893",
+      "start_source_file": "tblGrid_2023_01.csv",
+      "end_source_file": "tblGrid_2023_01.csv"
+    },
+    {
+      "station": "91",
+      "event_group": "9",
+      "first_detection_time": "2023-01-07 14:40:00",
+      "last_detection_time": "2023-01-07 14:40:00",
+      "detection_count": "1",
+      "dominant_class": "負載突升",
+      "maximum_confidence": "0.8648541569709778",
+      "start_source_file": "tblGrid_2023_01.csv",
+      "end_source_file": "tblGrid_2023_01.csv"
+    },
+    {
+      "station": "91",
+      "event_group": "10",
+      "first_detection_time": "2023-01-07 15:00:00",
+      "last_detection_time": "2023-01-07 15:00:00",
+      "detection_count": "1",
+      "dominant_class": "負載突升",
+      "maximum_confidence": "0.9037004113197327",
+      "start_source_file": "tblGrid_2023_01.csv",
+      "end_source_file": "tblGrid_2023_01.csv"
+    }
+  ]
+}

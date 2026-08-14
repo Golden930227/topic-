@@ -1,0 +1,83 @@
+{
+  "source_file": "D:\\蘇崇維\\讀取結果\\tblGrid_test_v3\\tblGrid_test_calibration_bins_v3.csv",
+  "encoding": "utf-8-sig",
+  "columns": [
+    "bin_lower",
+    "bin_upper",
+    "sample_count",
+    "mean_confidence",
+    "accuracy"
+  ],
+  "sample_rows": [
+    {
+      "bin_lower": "0.0",
+      "bin_upper": "0.1",
+      "sample_count": "0",
+      "mean_confidence": "",
+      "accuracy": ""
+    },
+    {
+      "bin_lower": "0.1",
+      "bin_upper": "0.2",
+      "sample_count": "0",
+      "mean_confidence": "",
+      "accuracy": ""
+    },
+    {
+      "bin_lower": "0.2",
+      "bin_upper": "0.30000000000000004",
+      "sample_count": "0",
+      "mean_confidence": "",
+      "accuracy": ""
+    },
+    {
+      "bin_lower": "0.30000000000000004",
+      "bin_upper": "0.4",
+      "sample_count": "1",
+      "mean_confidence": "0.3860698342323303",
+      "accuracy": "0.0"
+    },
+    {
+      "bin_lower": "0.4",
+      "bin_upper": "0.5",
+      "sample_count": "1",
+      "mean_confidence": "0.44123125076293945",
+      "accuracy": "0.0"
+    },
+    {
+      "bin_lower": "0.5",
+      "bin_upper": "0.6000000000000001",
+      "sample_count": "11",
+      "mean_confidence": "0.5587999224662781",
+      "accuracy": "0.45454545454545453"
+    },
+    {
+      "bin_lower": "0.6000000000000001",
+      "bin_upper": "0.7000000000000001",
+      "sample_count": "12",
+      "mean_confidence": "0.6633180975914001",
+      "accuracy": "0.16666666666666666"
+    },
+    {
+      "bin_lower": "0.7000000000000001",
+      "bin_upper": "0.8",
+      "sample_count": "13",
+      "mean_confidence": "0.7587624192237854",
+      "accuracy": "0.7692307692307693"
+    },
+    {
+      "bin_lower": "0.8",
+      "bin_upper": "0.9",
+      "sample_count": "19",
+      "mean_confidence": "0.8483108878135681",
+      "accuracy": "0.7894736842105263"
+    },
+    {
+      "bin_lower": "0.9",
+      "bin_upper": "1.0",
+      "sample_count": "1143",
+      "mean_confidence": "0.9974321722984314",
+      "accuracy": "0.9711286089238845"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "page_id": "cnn_monitor",
+  "page_label": "CNN監測",
+  "feature_id": "pi_status",
+  "feature_label": "Raspberry Pi 狀態",
+  "available": false,
+  "status": "目前缺少資料來源",
+  "source_routes": [],
+  "source_files": [],
+  "required_columns": [],
+  "selection": "目前缺少 Raspberry Pi 心跳或裝置狀態資料",
+  "sample_files": []
+}

@@ -1,0 +1,94 @@
+{
+  "source_file": "D:\\蘇崇維\\讀取結果\\tblGrid_test_v4\\tblGrid_test_calibration_bins_v4.csv",
+  "encoding": "utf-8-sig",
+  "columns": [
+    "bin_lower",
+    "bin_upper",
+    "sample_count",
+    "mean_confidence",
+    "accuracy",
+    "calibration_gap"
+  ],
+  "sample_rows": [
+    {
+      "bin_lower": "0.0",
+      "bin_upper": "0.1",
+      "sample_count": "0",
+      "mean_confidence": "",
+      "accuracy": "",
+      "calibration_gap": ""
+    },
+    {
+      "bin_lower": "0.1",
+      "bin_upper": "0.2",
+      "sample_count": "0",
+      "mean_confidence": "",
+      "accuracy": "",
+      "calibration_gap": ""
+    },
+    {
+      "bin_lower": "0.2",
+      "bin_upper": "0.30000000000000004",
+      "sample_count": "0",
+      "mean_confidence": "",
+      "accuracy": "",
+      "calibration_gap": ""
+    },
+    {
+      "bin_lower": "0.30000000000000004",
+      "bin_upper": "0.4",
+      "sample_count": "0",
+      "mean_confidence": "",
+      "accuracy": "",
+      "calibration_gap": ""
+    },
+    {
+      "bin_lower": "0.4",
+      "bin_upper": "0.5",
+      "sample_count": "0",
+      "mean_confidence": "",
+      "accuracy": "",
+      "calibration_gap": ""
+    },
+    {
+      "bin_lower": "0.5",
+      "bin_upper": "0.6000000000000001",
+      "sample_count": "31",
+      "mean_confidence": "0.5463846921920776",
+      "accuracy": "0.7096774193548387",
+      "calibration_gap": "0.1632927271627611"
+    },
+    {
+      "bin_lower": "0.6000000000000001",
+      "bin_upper": "0.7000000000000001",
+      "sample_count": "18",
+      "mean_confidence": "0.6459488272666931",
+      "accuracy": "0.4444444444444444",
+      "calibration_gap": "0.2015043828222487"
+    },
+    {
+      "bin_lower": "0.7000000000000001",
+      "bin_upper": "0.8",
+      "sample_count": "31",
+      "mean_confidence": "0.7429190874099731",
+      "accuracy": "0.6129032258064516",
+      "calibration_gap": "0.13001586160352152"
+    },
+    {
+      "bin_lower": "0.8",
+      "bin_upper": "0.9",
+      "sample_count": "54",
+      "mean_confidence": "0.8576690554618835",
+      "accuracy": "0.7777777777777778",
+      "calibration_gap": "0.07989127768410575"
+    },
+    {
+      "bin_lower": "0.9",
+      "bin_upper": "1.0",
+      "sample_count": "1066",
+      "mean_confidence": "0.9909998774528503",
+      "accuracy": "0.9812382739212008",
+      "calibration_gap": "0.009761603531649565"
+    }
+  ]
+}

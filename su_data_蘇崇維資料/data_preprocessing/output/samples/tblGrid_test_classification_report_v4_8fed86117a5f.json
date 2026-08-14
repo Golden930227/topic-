@@ -1,0 +1,62 @@
+{
+  "source_file": "D:\\蘇崇維\\讀取結果\\tblGrid_test_v4\\tblGrid_test_classification_report_v4.csv",
+  "encoding": "utf-8-sig",
+  "columns": [
+    "class_or_average",
+    "precision",
+    "recall",
+    "f1_score",
+    "support"
+  ],
+  "sample_rows": [
+    {
+      "class_or_average": "正常",
+      "precision": "0.893687707641196",
+      "recall": "0.8966666666666666",
+      "f1_score": "0.8951747088186356",
+      "support": "300.0"
+    },
+    {
+      "class_or_average": "電壓異常下降",
+      "precision": "1.0",
+      "recall": "0.9866666666666667",
+      "f1_score": "0.9932885906040269",
+      "support": "300.0"
+    },
+    {
+      "class_or_average": "負載／電流突升",
+      "precision": "0.8976897689768977",
+      "recall": "0.9066666666666666",
+      "f1_score": "0.9021558872305141",
+      "support": "300.0"
+    },
+    {
+      "class_or_average": "嚴重電壓電流異常",
+      "precision": "1.0",
+      "recall": "1.0",
+      "f1_score": "1.0",
+      "support": "300.0"
+    },
+    {
+      "class_or_average": "accuracy",
+      "precision": "",
+      "recall": "",
+      "f1_score": "0.9475",
+      "support": ""
+    },
+    {
+      "class_or_average": "macro avg",
+      "precision": "0.9478443691545234",
+      "recall": "0.9475",
+      "f1_score": "0.9476547966632941",
+      "support": "1200.0"
+    },
+    {
+      "class_or_average": "weighted avg",
+      "precision": "0.9478443691545234",
+      "recall": "0.9475",
+      "f1_score": "0.9476547966632942",
+      "support": "1200.0"
+    }
+  ]
+}

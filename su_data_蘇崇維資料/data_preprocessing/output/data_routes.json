@@ -1,0 +1,108 @@
+{
+  "ai_predictions": {
+    "name": "AI 判斷明細",
+    "website_features": [
+      "AI目前判斷",
+      "四分類機率",
+      "Confidence",
+      "歷史 AI 結果"
+    ],
+    "source_files": [
+      "D:\\蘇崇維\\讀取結果\\all_diagnosis_results_v2.csv",
+      "D:\\蘇崇維\\讀取結果\\tblGrid_predict_v3\\all_diagnosis_results_v3.csv"
+    ],
+    "file_count": 2
+  },
+  "ai_events": {
+    "name": "異常事件",
+    "website_features": [
+      "異常事件"
+    ],
+    "source_files": [
+      "D:\\蘇崇維\\讀取結果\\detected_event_groups_v2.csv",
+      "D:\\蘇崇維\\讀取結果\\tblGrid_predict_v3\\detected_event_groups_v3.csv"
+    ],
+    "file_count": 2
+  },
+  "data_quality": {
+    "name": "資料品質",
+    "website_features": [
+      "資料品質"
+    ],
+    "source_files": [
+      "D:\\蘇崇維\\讀取結果\\data_quality_v2.csv",
+      "D:\\蘇崇維\\讀取結果\\tblGrid_predict_v3\\data_quality_v3.csv",
+      "D:\\蘇崇維\\讀取結果\\tblGrid_test_v4\\tblGrid_test_feature_quality_v4.csv"
+    ],
+    "file_count": 3
+  },
+  "diagnosis_summary": {
+    "name": "AI 診斷摘要",
+    "website_features": [
+      "AI 結果統計",
+      "正常與異常比例"
+    ],
+    "source_files": [
+      "D:\\蘇崇維\\讀取結果\\diagnosis_summary_v2.csv",
+      "D:\\蘇崇維\\讀取結果\\tblGrid_predict_v3\\diagnosis_summary_v3.csv"
+    ],
+    "file_count": 2
+  },
+  "file_predictions": {
+    "name": "各檔案預測摘要",
+    "website_features": [
+      "月份比較",
+      "各檔案異常比例"
+    ],
+    "source_files": [
+      "D:\\蘇崇維\\讀取結果\\tblGrid_predict_v3\\prediction_by_file_v3.csv"
+    ],
+    "file_count": 1
+  },
+  "cnn_measurements": {
+    "name": "CNN 三相歷史監測",
+    "website_features": [
+      "三相電壓",
+      "三相電流",
+      "歷史資料曲線"
+    ],
+    "source_files": [
+      "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2023_01.csv",
+      "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2023_02.csv",
+      "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2023_03.csv",
+      "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2023_04.csv",
+      "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2023_05.csv",
+      "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2023_06.csv",
+      "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2023_07.csv",
+      "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2023_08.csv",
+      "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2023_09.csv",
+      "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2023_10.csv",
+      "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2023_11.csv",
+      "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2023_12.csv",
+      "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2024_01.csv",
+      "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2024_02.csv",
+      "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2024_03.csv",
+      "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2024_04.csv",
+      "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2024_05.csv",
+      "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2024_06.csv",
+      "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2024_07.csv",
+      "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2024_08.csv"
+    ],
+    "file_count": 20
+  },
+  "unknown": {
+    "name": "尚未分類",
+    "source_files": [
+      "D:\\蘇崇維\\讀取結果\\tblGrid_test_v3\\tblGrid_test_calibration_bins_v3.csv",
+      "D:\\蘇崇維\\讀取結果\\tblGrid_test_v3\\tblGrid_test_class_metrics_v3.csv",
+      "D:\\蘇崇維\\讀取結果\\tblGrid_test_v3\\tblGrid_test_classification_report_v3.csv",
+      "D:\\蘇崇維\\讀取結果\\tblGrid_test_v3\\tblGrid_test_misclassified_v3.csv",
+      "D:\\蘇崇維\\讀取結果\\tblGrid_test_v3\\tblGrid_test_predictions_v3.csv",
+      "D:\\蘇崇維\\讀取結果\\tblGrid_test_v4\\tblGrid_test_calibration_bins_v4.csv",
+      "D:\\蘇崇維\\讀取結果\\tblGrid_test_v4\\tblGrid_test_class_metrics_v4.csv",
+      "D:\\蘇崇維\\讀取結果\\tblGrid_test_v4\\tblGrid_test_classification_report_v4.csv",
+      "D:\\蘇崇維\\讀取結果\\tblGrid_test_v4\\tblGrid_test_misclassified_v4.csv",
+      "D:\\蘇崇維\\讀取結果\\tblGrid_test_v4\\tblGrid_test_predictions_v4.csv"
+    ]
+  }
+}

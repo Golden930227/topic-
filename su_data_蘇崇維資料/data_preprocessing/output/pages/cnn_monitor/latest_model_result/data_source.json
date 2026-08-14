@@ -1,0 +1,26 @@
+{
+  "page_id": "cnn_monitor",
+  "page_label": "CNN監測",
+  "feature_id": "latest_model_result",
+  "feature_label": "最近一次模型判斷",
+  "available": true,
+  "status": "可使用",
+  "source_routes": [
+    "ai_predictions"
+  ],
+  "source_files": [
+    "D:\\蘇崇維\\讀取結果\\all_diagnosis_results_v2.csv",
+    "D:\\蘇崇維\\讀取結果\\tblGrid_predict_v3\\all_diagnosis_results_v3.csv"
+  ],
+  "required_columns": [
+    "prediction_time",
+    "final_result",
+    "confidence",
+    "confirmed_event"
+  ],
+  "selection": "依 prediction_time 取最新一筆（目前是離線結果）",
+  "sample_files": [
+    "C:\\Users\\admin\\Downloads\\topic\\topic_website\\Mr_SU\\data_preprocessing\\output\\samples\\all_diagnosis_results_v2_b384bad2d40f.json",
+    "C:\\Users\\admin\\Downloads\\topic\\topic_website\\Mr_SU\\data_preprocessing\\output\\samples\\all_diagnosis_results_v3_13c1587c89c0.json"
+  ]
+}
