@@ -1,11 +1,10 @@
 import { Link } from "react-router-dom"
 import Icon from "../common/Icon.jsx"
-import { openCnnMonitor } from "../../utils/openCnnMonitor.js"
 
 const entries = [
   { title: "智慧感測器", description: "檢視風機感測器與即時環境資料。", href: "http://localhost:8501", icon: "social", label: "開啟感測器" },
   { title: "人工智能模型", description: "進入模型分析與推論工作區。", href: "http://localhost:8502", icon: "documentation", label: "開啟模型" },
-  { title: "CNN 監測", description: "啟動 Streamlit CNN 即時監測介面。", action: openCnnMonitor, icon: "documentation", label: "啟動監測" },
+  { title: "風機即時監測", description: "查看直流發電機的即時量測與資料連線狀態。", route: "/cnn-monitor", icon: "documentation", label: "開啟監測" },
   { title: "問題回報", description: "記錄系統、設備或監測結果問題。", route: "/report", icon: "social", label: "建立回報" },
 ]
 

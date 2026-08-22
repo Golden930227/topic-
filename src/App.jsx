@@ -29,6 +29,7 @@ import HomePage from "./pages/HomePage.jsx"
 import WorkerPage from "./pages/WorkerPage.jsx"
 import VisitorRegisterPage from "./pages/VisitorRegisterPage.jsx"
 import ReportPage from "./pages/ReportPage.jsx"
+import CnnMonitorPage from "./pages/CnnMonitorPage.jsx"
 
 import "./App.css"
 import "./pages/VisitorPages.css"
@@ -476,6 +477,10 @@ function AppRoutes() {
                 }
               />
             }
+          />
+          <Route
+            path="/cnn-monitor"
+            element={<CnnMonitorPage />}
           />
         </Route>
       </Route>
