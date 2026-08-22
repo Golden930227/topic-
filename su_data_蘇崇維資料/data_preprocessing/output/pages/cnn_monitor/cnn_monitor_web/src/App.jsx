@@ -1,13 +1,12 @@
-import { Link } from "react-router-dom"
-import ConnectionStatus from "../components/cnn-monitor/ConnectionStatus.jsx"
-import DataStatus from "../components/cnn-monitor/DataStatus.jsx"
-import LineChart from "../components/cnn-monitor/LineChart.jsx"
-import MeasurementCards from "../components/cnn-monitor/MeasurementCards.jsx"
-import RecentMeasurementsTable from "../components/cnn-monitor/RecentMeasurementsTable.jsx"
-import { connectionStatus, dataStatus, latestMeasurement, measurementHistory } from "../data/monitorMockData.js"
-import "../components/cnn-monitor/cnn-monitor.css"
+import ConnectionStatus from "./components/ConnectionStatus.jsx"
+import DataStatus from "./components/DataStatus.jsx"
+import LineChart from "./components/LineChart.jsx"
+import MeasurementCards from "./components/MeasurementCards.jsx"
+import RecentMeasurementsTable from "./components/RecentMeasurementsTable.jsx"
+import { connectionStatus, dataStatus, latestMeasurement, measurementHistory } from "./data/monitorMockData.js"
+import "./cnn-monitor.css"
 
-function CnnMonitorPage() {
+function App() {
   const resolvedDataStatus = {
     ...dataStatus,
     state: connectionStatus.lastUpdateSeconds > dataStatus.staleAfterSeconds
@@ -24,7 +23,7 @@ function CnnMonitorPage() {
             <h1>風機即時監測</h1>
             <p>換向器式直流發電機 · DC 實機量測</p>
           </div>
-          <div className="monitor-hero-actions"><span className="monitor-live-badge"><i /> 系統運行中</span><Link to="/worker">返回工作區</Link></div>
+          <div className="monitor-hero-actions"><span className="monitor-live-badge"><i /> 系統運行中</span></div>
         </header>
 
         <MeasurementCards measurement={latestMeasurement} />
@@ -42,4 +41,4 @@ function CnnMonitorPage() {
   )
 }
 
-export default CnnMonitorPage
+export default App

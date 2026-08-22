@@ -3,9 +3,10 @@ import {
   useRef,
   useState,
 } from "react"
-import { Link, useLocation } from "react-router-dom"
+import { useLocation } from "react-router-dom"
 
 import Logo from "../common/Logo.jsx"
+import { openCnnMonitor } from "../../utils/openCnnMonitor.js"
 
 function Navbar({
   user,
@@ -181,9 +182,15 @@ function Navbar({
               "cnn",
               "CNN監測與問題回報",
               <>
-                <Link to="/cnn-monitor" onClick={closeMenu}>
-                  風機即時監測
-                </Link>
+                <a
+                  href="#cnn-monitor"
+                  onClick={(event) => {
+                    closeMenu()
+                    openCnnMonitor(event)
+                  }}
+                >
+                  CNN監測
+                </a>
 
                 <a
                   href="/report"
