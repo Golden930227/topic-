@@ -1,0 +1,30 @@
+{
+  "page_id": "ai_model",
+  "page_label": "人工智能模型",
+  "feature_id": "prediction_history",
+  "feature_label": "歷史 AI 結果",
+  "available": true,
+  "status": "可使用",
+  "source_routes": [
+    "ai_predictions"
+  ],
+  "source_files": [
+    "D:\\蘇崇維\\讀取結果\\all_diagnosis_results_v2.csv",
+    "D:\\蘇崇維\\讀取結果\\tblGrid_predict_v3\\all_diagnosis_results_v3.csv"
+  ],
+  "required_columns": [
+    "prediction_time",
+    "station",
+    "final_result",
+    "confidence",
+    "probability_normal",
+    "probability_voltage_sag",
+    "probability_load_spike",
+    "probability_severe_anomaly"
+  ],
+  "selection": "依 prediction_time 查詢指定時間範圍",
+  "sample_files": [
+    "C:\\Users\\admin\\Downloads\\topic\\topic_website\\Mr_SU\\data_preprocessing\\output\\samples\\all_diagnosis_results_v2_b384bad2d40f.json",
+    "C:\\Users\\admin\\Downloads\\topic\\topic_website\\Mr_SU\\data_preprocessing\\output\\samples\\all_diagnosis_results_v3_13c1587c89c0.json"
+  ]
+}

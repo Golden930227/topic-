@@ -1,0 +1,26 @@
+{
+  "page_id": "ai_model",
+  "page_label": "人工智能模型",
+  "feature_id": "confidence",
+  "feature_label": "Confidence",
+  "available": true,
+  "status": "可使用",
+  "source_routes": [
+    "ai_predictions"
+  ],
+  "source_files": [
+    "D:\\蘇崇維\\讀取結果\\all_diagnosis_results_v2.csv",
+    "D:\\蘇崇維\\讀取結果\\tblGrid_predict_v3\\all_diagnosis_results_v3.csv"
+  ],
+  "required_columns": [
+    "prediction_time",
+    "confidence",
+    "probability_margin",
+    "confidence_passed"
+  ],
+  "selection": "依 prediction_time 取最新一筆",
+  "sample_files": [
+    "C:\\Users\\admin\\Downloads\\topic\\topic_website\\Mr_SU\\data_preprocessing\\output\\samples\\all_diagnosis_results_v2_b384bad2d40f.json",
+    "C:\\Users\\admin\\Downloads\\topic\\topic_website\\Mr_SU\\data_preprocessing\\output\\samples\\all_diagnosis_results_v3_13c1587c89c0.json"
+  ]
+}

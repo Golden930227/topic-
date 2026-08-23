@@ -1,0 +1,31 @@
+{
+  "page_id": "ai_model",
+  "page_label": "人工智能模型",
+  "feature_id": "data_quality",
+  "feature_label": "資料品質",
+  "available": true,
+  "status": "可使用",
+  "source_routes": [
+    "data_quality"
+  ],
+  "source_files": [
+    "D:\\蘇崇維\\讀取結果\\data_quality_v2.csv",
+    "D:\\蘇崇維\\讀取結果\\tblGrid_predict_v3\\data_quality_v3.csv",
+    "D:\\蘇崇維\\讀取結果\\tblGrid_test_v4\\tblGrid_test_feature_quality_v4.csv"
+  ],
+  "required_columns": [
+    "file_name",
+    "status",
+    "original_rows",
+    "valid_rows",
+    "removed_invalid_rows",
+    "duplicate_rows_removed",
+    "message"
+  ],
+  "selection": "顯示全部檔案，或依 file_name 篩選",
+  "sample_files": [
+    "C:\\Users\\admin\\Downloads\\topic\\topic_website\\Mr_SU\\data_preprocessing\\output\\samples\\data_quality_v2_83f8d454028e.json",
+    "C:\\Users\\admin\\Downloads\\topic\\topic_website\\Mr_SU\\data_preprocessing\\output\\samples\\data_quality_v3_5dde1916e1d4.json",
+    "C:\\Users\\admin\\Downloads\\topic\\topic_website\\Mr_SU\\data_preprocessing\\output\\samples\\tblGrid_test_feature_quality_v4_0c336dc688ea.json"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "page_id": "cnn_monitor",
+  "page_label": "CNN監測",
+  "feature_id": "realtime_result",
+  "feature_label": "即時監測結果",
+  "available": false,
+  "status": "目前缺少資料來源",
+  "source_routes": [],
+  "source_files": [],
+  "required_columns": [],
+  "selection": "目前只有離線 AI 結果，尚無即時推論資料流",
+  "sample_files": []
+}

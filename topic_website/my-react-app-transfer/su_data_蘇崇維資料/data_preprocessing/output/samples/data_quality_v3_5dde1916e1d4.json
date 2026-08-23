@@ -1,0 +1,138 @@
+{
+  "source_file": "D:\\蘇崇維\\讀取結果\\tblGrid_predict_v3\\data_quality_v3.csv",
+  "encoding": "utf-8-sig",
+  "columns": [
+    "record_type",
+    "file_name",
+    "file_path",
+    "status",
+    "original_rows",
+    "valid_rows",
+    "removed_invalid_rows",
+    "duplicate_rows_removed",
+    "continuous_segments",
+    "message"
+  ],
+  "sample_rows": [
+    {
+      "record_type": "file",
+      "file_name": "tblGrid_2023_01.csv",
+      "file_path": "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2023_01.csv",
+      "status": "success",
+      "original_rows": "4465",
+      "valid_rows": "4465",
+      "removed_invalid_rows": "0",
+      "duplicate_rows_removed": "0",
+      "continuous_segments": "",
+      "message": ""
+    },
+    {
+      "record_type": "file",
+      "file_name": "tblGrid_2023_02.csv",
+      "file_path": "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2023_02.csv",
+      "status": "success",
+      "original_rows": "4033",
+      "valid_rows": "4033",
+      "removed_invalid_rows": "0",
+      "duplicate_rows_removed": "0",
+      "continuous_segments": "",
+      "message": ""
+    },
+    {
+      "record_type": "file",
+      "file_name": "tblGrid_2023_03.csv",
+      "file_path": "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2023_03.csv",
+      "status": "success",
+      "original_rows": "4465",
+      "valid_rows": "4465",
+      "removed_invalid_rows": "0",
+      "duplicate_rows_removed": "0",
+      "continuous_segments": "",
+      "message": ""
+    },
+    {
+      "record_type": "file",
+      "file_name": "tblGrid_2023_04.csv",
+      "file_path": "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2023_04.csv",
+      "status": "success",
+      "original_rows": "4319",
+      "valid_rows": "4319",
+      "removed_invalid_rows": "0",
+      "duplicate_rows_removed": "0",
+      "continuous_segments": "",
+      "message": ""
+    },
+    {
+      "record_type": "file",
+      "file_name": "tblGrid_2023_05.csv",
+      "file_path": "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2023_05.csv",
+      "status": "success",
+      "original_rows": "4465",
+      "valid_rows": "4465",
+      "removed_invalid_rows": "0",
+      "duplicate_rows_removed": "0",
+      "continuous_segments": "",
+      "message": ""
+    },
+    {
+      "record_type": "file",
+      "file_name": "tblGrid_2023_06.csv",
+      "file_path": "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2023_06.csv",
+      "status": "success",
+      "original_rows": "4321",
+      "valid_rows": "4321",
+      "removed_invalid_rows": "0",
+      "duplicate_rows_removed": "0",
+      "continuous_segments": "",
+      "message": ""
+    },
+    {
+      "record_type": "file",
+      "file_name": "tblGrid_2023_07.csv",
+      "file_path": "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2023_07.csv",
+      "status": "success",
+      "original_rows": "4465",
+      "valid_rows": "4465",
+      "removed_invalid_rows": "0",
+      "duplicate_rows_removed": "0",
+      "continuous_segments": "",
+      "message": ""
+    },
+    {
+      "record_type": "file",
+      "file_name": "tblGrid_2023_08.csv",
+      "file_path": "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2023_08.csv",
+      "status": "success",
+      "original_rows": "4465",
+      "valid_rows": "4465",
+      "removed_invalid_rows": "0",
+      "duplicate_rows_removed": "0",
+      "continuous_segments": "",
+      "message": ""
+    },
+    {
+      "record_type": "file",
+      "file_name": "tblGrid_2023_09.csv",
+      "file_path": "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2023_09.csv",
+      "status": "success",
+      "original_rows": "4321",
+      "valid_rows": "4321",
+      "removed_invalid_rows": "0",
+      "duplicate_rows_removed": "0",
+      "continuous_segments": "",
+      "message": ""
+    },
+    {
+      "record_type": "file",
+      "file_name": "tblGrid_2023_10.csv",
+      "file_path": "D:\\蘇崇維\\蘇格蘭\\2024\\tblGrid\\tblGrid_2023_10.csv",
+      "status": "success",
+      "original_rows": "4465",
+      "valid_rows": "4465",
+      "removed_invalid_rows": "0",
+      "duplicate_rows_removed": "0",
+      "continuous_segments": "",
+      "message": ""
+    }
+  ]
+}

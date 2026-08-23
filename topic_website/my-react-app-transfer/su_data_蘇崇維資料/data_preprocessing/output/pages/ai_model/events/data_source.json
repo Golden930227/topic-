@@ -1,0 +1,30 @@
+{
+  "page_id": "ai_model",
+  "page_label": "人工智能模型",
+  "feature_id": "events",
+  "feature_label": "異常事件",
+  "available": true,
+  "status": "可使用",
+  "source_routes": [
+    "ai_events"
+  ],
+  "source_files": [
+    "D:\\蘇崇維\\讀取結果\\detected_event_groups_v2.csv",
+    "D:\\蘇崇維\\讀取結果\\tblGrid_predict_v3\\detected_event_groups_v3.csv"
+  ],
+  "required_columns": [
+    "event_group_id",
+    "class_name_zh",
+    "first_detection_time",
+    "last_detection_time",
+    "detection_span_minutes",
+    "mean_confidence",
+    "maximum_confidence",
+    "source_files"
+  ],
+  "selection": "依 first_detection_time 由新到舊",
+  "sample_files": [
+    "C:\\Users\\admin\\Downloads\\topic\\topic_website\\Mr_SU\\data_preprocessing\\output\\samples\\detected_event_groups_v2_326cf68bad9e.json",
+    "C:\\Users\\admin\\Downloads\\topic\\topic_website\\Mr_SU\\data_preprocessing\\output\\samples\\detected_event_groups_v3_305b3868221a.json"
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "page_id": "ai_model",
+  "page_label": "人工智能模型",
+  "feature_id": "class_probabilities",
+  "feature_label": "四分類機率",
+  "available": true,
+  "status": "可使用",
+  "source_routes": [
+    "ai_predictions"
+  ],
+  "source_files": [
+    "D:\\蘇崇維\\讀取結果\\all_diagnosis_results_v2.csv",
+    "D:\\蘇崇維\\讀取結果\\tblGrid_predict_v3\\all_diagnosis_results_v3.csv"
+  ],
+  "required_columns": [
+    "prediction_time",
+    "probability_normal",
+    "probability_voltage_sag",
+    "probability_load_spike",
+    "probability_severe_anomaly"
+  ],
+  "selection": "目前畫面取最新一筆；趨勢圖可取時間範圍",
+  "sample_files": [
+    "C:\\Users\\admin\\Downloads\\topic\\topic_website\\Mr_SU\\data_preprocessing\\output\\samples\\all_diagnosis_results_v2_b384bad2d40f.json",
+    "C:\\Users\\admin\\Downloads\\topic\\topic_website\\Mr_SU\\data_preprocessing\\output\\samples\\all_diagnosis_results_v3_13c1587c89c0.json"
+  ]
+}
