@@ -1,4 +1,8 @@
-import { useEffect, useState } from "react"
+import {
+  useEffect,
+  useState,
+} from "react"
+
 import {
   BrowserRouter,
   Navigate,
@@ -8,11 +12,13 @@ import {
   useLocation,
   useNavigate,
 } from "react-router-dom"
+
 import {
   onAuthStateChanged,
   signInWithPopup,
   signOut,
 } from "firebase/auth"
+
 import {
   doc,
   getDoc,
@@ -25,10 +31,13 @@ import {
 } from "./firebase.js"
 
 import ProtectedRoute from "./components/common/ProtectedRoute.jsx"
+
 import HomePage from "./pages/HomePage.jsx"
 import WorkerPage from "./pages/WorkerPage.jsx"
 import VisitorRegisterPage from "./pages/VisitorRegisterPage.jsx"
 import ReportPage from "./pages/ReportPage.jsx"
+import AiModelPage from "./pages/AiModelPage.jsx"
+import CNNMonitorPage from "./pages/CNNMonitorPage.jsx"
 
 import "./App.css"
 import "./pages/VisitorPages.css"
@@ -51,17 +60,27 @@ function isAllowedMember(email) {
 
   return Boolean(
     normalizedEmail &&
-    allowedEmails.includes(normalizedEmail)
+      allowedEmails.includes(
+        normalizedEmail
+      )
   )
 }
 
-async function getAccessStatus(currentUser) {
-  if (isAllowedMember(currentUser.email)) {
+async function getAccessStatus(
+  currentUser
+) {
+  if (
+    isAllowedMember(currentUser.email)
+  ) {
     return "member"
   }
 
   const visitorDocument = await getDoc(
-    doc(db, "visitors", currentUser.uid)
+    doc(
+      db,
+      "visitors",
+      currentUser.uid
+    )
   )
 
   return visitorDocument.exists()
@@ -89,7 +108,8 @@ function VisitorAccessGate({
 
   if (
     !authReady ||
-    (user && accessStatus === "checking")
+    (user &&
+      accessStatus === "checking")
   ) {
     return <AccessLoading />
   }
@@ -111,7 +131,9 @@ function VisitorAccessGate({
     return <Outlet />
   }
 
-  if (accessStatus === "missing") {
+  if (
+    accessStatus === "missing"
+  ) {
     return (
       <Navigate
         to="/visitor-register"
@@ -123,8 +145,13 @@ function VisitorAccessGate({
   return (
     <main className="access-page">
       <section className="access-card">
-        <h1>無法確認訪客資料</h1>
-        <p>請重新整理頁面後再試一次。</p>
+        <h1>
+          無法確認訪客資料
+        </h1>
+
+        <p>
+          請重新整理頁面後再試一次。
+        </p>
       </section>
     </main>
   )
@@ -140,7 +167,8 @@ function WorkerAccessGate({
 
   if (
     !authReady ||
-    (user && accessStatus === "checking")
+    (user &&
+      accessStatus === "checking")
   ) {
     return <AccessLoading />
   }
@@ -159,16 +187,25 @@ function WorkerAccessGate({
    * /worker 只允許白名單中的 member。
    * visitor 和 missing 都不能進入。
    */
-  if (accessStatus === "member") {
+  if (
+    accessStatus === "member"
+  ) {
     return <Outlet />
   }
 
-  if (accessStatus === "error") {
+  if (
+    accessStatus === "error"
+  ) {
     return (
       <main className="access-page">
         <section className="access-card">
-          <h1>無法確認工作人員權限</h1>
-          <p>請重新整理頁面後再試一次。</p>
+          <h1>
+            無法確認工作人員權限
+          </h1>
+
+          <p>
+            請重新整理頁面後再試一次。
+          </p>
 
           <button
             type="button"
@@ -189,11 +226,14 @@ function WorkerAccessGate({
   return (
     <main className="access-page">
       <section className="access-card">
-        <h1>沒有工作人員權限</h1>
+        <h1>
+          沒有工作人員權限
+        </h1>
 
         <p>
           此頁面僅限專題成員使用。如需工作人員權限，
-          請聯絡管理員將你的 Google Email 加入白名單。
+          請聯絡管理員將你的 Google Email
+          加入白名單。
         </p>
 
         <button
@@ -213,24 +253,30 @@ function WorkerAccessGate({
 }
 
 function AppRoutes() {
-  const [user, setUser] = useState(null)
+  const [user, setUser] =
+    useState(null)
 
-  const [authReady, setAuthReady] =
-    useState(false)
+  const [
+    authReady,
+    setAuthReady,
+  ] = useState(false)
 
-  const [accessStatus, setAccessStatus] =
-    useState("signed-out")
+  const [
+    accessStatus,
+    setAccessStatus,
+  ] = useState("signed-out")
 
   const navigate = useNavigate()
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(
-      auth,
-      (currentUser) => {
-        setUser(currentUser)
-        setAuthReady(true)
-      }
-    )
+    const unsubscribe =
+      onAuthStateChanged(
+        auth,
+        (currentUser) => {
+          setUser(currentUser)
+          setAuthReady(true)
+        }
+      )
 
     return unsubscribe
   }, [])
@@ -239,7 +285,10 @@ function AppRoutes() {
     let cancelled = false
 
     if (!user) {
-      setAccessStatus("signed-out")
+      setAccessStatus(
+        "signed-out"
+      )
+
       return undefined
     }
 
@@ -267,33 +316,53 @@ function AppRoutes() {
     }
   }, [user])
 
-  const onAuthButtonClick = async (
-    loginMode = "member"
-  ) => {
-    /*
-     * 已登入時：
-     * - 按同組按鈕：登出
-     * - 按訪客按鈕：進訪客頁
-     */
-    if (user) {
-      if (loginMode === "visitor") {
+  const onAuthButtonClick =
+    async (
+      loginMode = "member"
+    ) => {
+      /*
+       * 已登入時：
+       * - 按同組按鈕：登出
+       * - 按訪客按鈕：進訪客頁
+       */
+      if (user) {
+        if (
+          loginMode === "visitor"
+        ) {
+          try {
+            const status =
+              await getAccessStatus(
+                user
+              )
+
+            setAccessStatus(status)
+
+            navigate(
+              status === "missing"
+                ? "/visitor-register"
+                : "/visitor",
+              {
+                replace: true,
+              }
+            )
+          } catch (error) {
+            window.alert(
+              `確認訪客資料失敗：${error.message}`
+            )
+          }
+
+          return
+        }
+
         try {
-          const status =
-            await getAccessStatus(user)
+          await signOut(auth)
 
-          setAccessStatus(status)
-
-          navigate(
-            status === "missing"
-              ? "/visitor-register"
-              : "/visitor",
-            {
-              replace: true,
-            }
-          )
+          navigate("/", {
+            replace: true,
+          })
         } catch (error) {
           window.alert(
-            `確認訪客資料失敗：${error.message}`
+            `登出失敗：${error.message}`
           )
         }
 
@@ -301,100 +370,91 @@ function AppRoutes() {
       }
 
       try {
-        await signOut(auth)
+        const result =
+          await signInWithPopup(
+            auth,
+            googleProvider
+          )
 
-        navigate("/", {
-          replace: true,
-        })
-      } catch (error) {
-        window.alert(
-          `登出失敗：${error.message}`
-        )
-      }
+        const signedInUser =
+          result.user
 
-      return
-    }
+        setUser(signedInUser)
 
-    try {
-      const result = await signInWithPopup(
-        auth,
-        googleProvider
-      )
-
-      const signedInUser = result.user
-
-      setUser(signedInUser)
-
-      /*
-       * 同組登入：
-       * 必須存在 allowedEmails 白名單。
-       */
-      if (loginMode === "member") {
+        /*
+         * 同組登入：
+         * 必須存在 allowedEmails 白名單。
+         */
         if (
-          !isAllowedMember(
-            signedInUser.email
-          )
+          loginMode === "member"
         ) {
-          await signOut(auth)
+          if (
+            !isAllowedMember(
+              signedInUser.email
+            )
+          ) {
+            await signOut(auth)
 
-          window.alert(
-            "此帳號沒有工作人員權限，請聯絡管理員。"
-          )
+            window.alert(
+              "此帳號沒有工作人員權限，請聯絡管理員。"
+            )
 
-          navigate("/", {
+            navigate("/", {
+              replace: true,
+            })
+
+            return
+          }
+
+          setAccessStatus("member")
+
+          navigate("/worker", {
             replace: true,
           })
 
           return
         }
 
-        setAccessStatus("member")
+        /*
+         * 訪客登入：
+         * 不在白名單也不會被拒絕。
+         * 第一次先註冊，之後直接進訪客頁。
+         */
+        const status =
+          await getAccessStatus(
+            signedInUser
+          )
 
-        navigate("/worker", {
-          replace: true,
-        })
+        setAccessStatus(status)
 
-        return
-      }
-
-      /*
-       * 訪客登入：
-       * 不在白名單也不會被拒絕。
-       * 第一次先註冊，之後直接進訪客頁。
-       */
-      const status = await getAccessStatus(
-        signedInUser
-      )
-
-      setAccessStatus(status)
-
-      navigate(
-        status === "missing"
-          ? "/visitor-register"
-          : "/visitor",
-        {
-          replace: true,
+        navigate(
+          status === "missing"
+            ? "/visitor-register"
+            : "/visitor",
+          {
+            replace: true,
+          }
+        )
+      } catch (error) {
+        if (
+          error.code ===
+            "auth/popup-closed-by-user" ||
+          error.code ===
+            "auth/cancelled-popup-request"
+        ) {
+          return
         }
-      )
-    } catch (error) {
-      if (
-        error.code ===
-          "auth/popup-closed-by-user" ||
-        error.code ===
-          "auth/cancelled-popup-request"
-      ) {
-        return
+
+        window.alert(
+          `登入失敗：${error.message}`
+        )
       }
-
-      window.alert(
-        `登入失敗：${error.message}`
-      )
     }
-  }
 
-  const handleVisitorRegistered = () => {
-    setAccessStatus("visitor")
-  }
+  const handleVisitorRegistered =
+    () => {
+      setAccessStatus("visitor")
+    }
 
   return (
     <Routes>
@@ -440,7 +500,9 @@ function AppRoutes() {
             <VisitorAccessGate
               user={user}
               authReady={authReady}
-              accessStatus={accessStatus}
+              accessStatus={
+                accessStatus
+              }
             />
           }
         >
@@ -455,6 +517,20 @@ function AppRoutes() {
               />
             }
           />
+
+          <Route
+            path="/ai-model"
+            element={
+              <AiModelPage />
+            }
+          />
+
+          <Route
+            path="/cnn-monitor"
+            element={
+              <CNNMonitorPage />
+            }
+          />
         </Route>
 
         <Route
@@ -462,7 +538,9 @@ function AppRoutes() {
             <WorkerAccessGate
               user={user}
               authReady={authReady}
-              accessStatus={accessStatus}
+              accessStatus={
+                accessStatus
+              }
             />
           }
         >

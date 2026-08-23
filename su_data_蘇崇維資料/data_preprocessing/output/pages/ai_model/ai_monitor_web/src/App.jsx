@@ -48,7 +48,7 @@ function App() {
 
           <span>
             <strong>WindMind AI</strong>
-            <small>風力發電智慧監測</small>
+            <small>人工智能模型</small>
           </span>
         </a>
 
@@ -65,8 +65,8 @@ function App() {
             AI POWER MONITORING
           </div>
 
-          <h1>訓練模型</h1>
-          <p>此AI是我們組拿資料下去訓練的。</p>
+          <h1>人工智能模型</h1>
+          <p>此AI是我們組拿資料下去做偏移學習。</p>
         </section>
 
         <CurrentPrediction

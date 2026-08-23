@@ -3,10 +3,13 @@ import {
   useRef,
   useState,
 } from "react"
-import { useLocation } from "react-router-dom"
+
+import {
+  Link,
+  useLocation,
+} from "react-router-dom"
 
 import Logo from "../common/Logo.jsx"
-import { openCnnMonitor } from "../../utils/openCnnMonitor.js"
 
 function Navbar({
   user,
@@ -138,7 +141,9 @@ function Navbar({
             : ""
         }`}
         onClick={(event) => {
-          if (event.target.closest("a")) {
+          if (
+            event.target.closest?.("a")
+          ) {
             closeMobileMenu()
           }
         }}
@@ -167,14 +172,12 @@ function Navbar({
                   智慧感測器
                 </a>
 
-                <a
-                  href="http://localhost:8502"
-                  target="_blank"
-                  rel="noreferrer"
+                <Link
+                  to="/ai-model"
                   onClick={closeMenu}
                 >
                   人工智能模型
-                </a>
+                </Link>
               </>
             )}
 
@@ -182,22 +185,19 @@ function Navbar({
               "cnn",
               "CNN監測與問題回報",
               <>
-                <a
-                  href="#cnn-monitor"
-                  onClick={(event) => {
-                    closeMenu()
-                    openCnnMonitor(event)
-                  }}
+                <Link
+                  to="/cnn-monitor"
+                  onClick={closeMenu}
                 >
                   CNN監測
-                </a>
+                </Link>
 
-                <a
-                  href="/report"
+                <Link
+                  to="/report"
                   onClick={closeMenu}
                 >
                   問題回報
-                </a>
+                </Link>
               </>
             )}
           </>
@@ -211,7 +211,11 @@ function Navbar({
           專題教授
         </a>
 
-        <a href="#references">
+        <a
+          href="https://zenodo.org/records/14870023?preview_file=2024.zip"
+          target="_blank"
+          rel="noreferrer"
+        >
           參考資料
         </a>
       </nav>
