@@ -16,3 +16,9 @@ dist-ssr
 *.sw?
 
 .vercel
+
+# Local monitor access codes, event history, and process logs
+.windmind-logs/
+*.sqlite3
+*.sqlite3-wal
+*.sqlite3-shm
