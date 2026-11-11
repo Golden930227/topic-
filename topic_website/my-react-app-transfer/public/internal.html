@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WindMind｜內網入口</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #091321; color: #eaf2ff; font-family: system-ui, sans-serif; }
+    main { max-width: 1000px; margin: auto; padding: 64px 24px; }
+    .brand { color: #64dbc1; letter-spacing: .16em; font-weight: 700; }
+    h1 { font-size: clamp(30px, 6vw, 46px); margin-bottom: 12px; }
+    p { color: #a9bad1; line-height: 1.8; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px; margin-top: 32px; }
+    .card { display: flex; flex-direction: column; padding: 26px; border: 1px solid #2b4059; border-radius: 18px; background: #112238; text-decoration: none; color: inherit; transition: border-color .15s, transform .15s; }
+    .card:hover { border-color: #64dbc1; transform: translateY(-3px); }
+    .card:focus-visible { outline: 3px solid #64dbc1; outline-offset: 4px; }
+    h2 { font-size: 22px; margin: 0 0 10px; }
+    .card p { margin: 0 0 24px; flex: 1; }
+    .port { color: #64dbc1; font-size: 14px; }
+    footer { margin-top: 32px; }
+    .back { display: inline-block; color: #64dbc1; margin-bottom: 24px; }
+  </style>
+</head>
+<body>
+  <main>
+    <a class="back" href="/worker">← 返回員工工作頁</a>
+    <div class="brand">WINDMIND</div>
+    <h1>內網工具，一個入口。</h1>
+    <p>雙擊桌面的「WindMind 一鍵啟動」即可啟動服務，再從這裡開啟需要的頁面。<br>此入口供這台電腦使用；所有頁面都會在新分頁開啟。</p>
+    <p>僅限本機開發使用：此靜態入口尚無服務端員工身分驗證，請勿對外開放。</p>
+    <div class="grid">
+      <a class="card" href="http://127.0.0.1:5173/" target="_blank" rel="noreferrer"><h2>主網站</h2><p>專題首頁與工作平台</p><span class="port">開啟網站 ↗ · 5173</span></a>
+      <a class="card" href="http://127.0.0.1:5174/" target="_blank" rel="noreferrer"><h2>AI 監看</h2><p>AI 模型預測與監測資料</p><span class="port">開啟 AI ↗ · 5174</span></a>
+      <a class="card" href="http://127.0.0.1:5175/" target="_blank" rel="noreferrer"><h2>CNN 監看</h2><p>CNN 模型結果與異常監看</p><span class="port">開啟 CNN ↗ · 5175</span></a>
+      <a class="card" href="http://127.0.0.1:8000/docs" target="_blank" rel="noreferrer"><h2>API 文件</h2><p>後端 API 文件與互動測試</p><span class="port">開啟文件 ↗ · 8000</span></a>
+      <a class="card" href="http://127.0.0.1:8502/" target="_blank" rel="noreferrer"><h2>SQL Streamlit</h2><p>SQL 資料表與 Gateway 日誌</p><span class="port">開啟 Streamlit ↗ · 8502</span></a>
+    </div>
+    <footer><p>若頁面無法連線，請先執行桌面啟動捷徑，並查看啟動視窗中的訊息。</p></footer>
+  </main>
+</body>
+</html>
