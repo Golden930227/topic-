@@ -1,4 +1,5 @@
 :root{--ink:#20243d;--muted:#73758d;--purple:#7154d8;--purple-dark:#4f38a6;--purple-soft:#f1edff;--line:#eceaf4;--surface:rgba(255,255,255,.94);--shadow:0 16px 45px rgba(67,49,128,.08)}
+.topbar .brand{cursor:pointer}.topbar .brand:focus-visible{outline:2px solid var(--purple);outline-offset:4px}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-width:320px;background:#f6f5fb;color:var(--ink)}
 .app-shell{min-height:100vh;background:radial-gradient(circle at 12% 4%,#ebe4ff 0,transparent 25rem),radial-gradient(circle at 92% 30%,#edf0ff 0,transparent 26rem),#f7f6fb}
 .topbar{height:78px;padding:0 clamp(20px,5vw,72px);display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(113,84,216,.1);background:rgba(255,255,255,.72);backdrop-filter:blur(16px)}

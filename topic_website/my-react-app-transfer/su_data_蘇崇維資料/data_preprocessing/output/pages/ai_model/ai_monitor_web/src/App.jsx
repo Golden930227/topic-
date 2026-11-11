@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Activity, Sparkles, Wind } from 'lucide-react'
 import './App.css'
+import { getHomeUrl } from './homeNavigation'
 
 import CurrentPrediction from './components/CurrentPrediction'
 import PredictionHistory from './components/PredictionHistory'
@@ -39,8 +40,8 @@ function App() {
       <header className="topbar">
         <a
           className="brand"
-          href="#top"
-          aria-label="風智監測首頁"
+          href={getHomeUrl()}
+          aria-label="WindMind AI：返回主站首頁"
         >
           <span className="brand-mark">
             <Wind size={23} aria-hidden="true" />
