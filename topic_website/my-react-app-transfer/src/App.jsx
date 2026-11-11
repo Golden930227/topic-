@@ -34,6 +34,7 @@ import ProtectedRoute from "./components/common/ProtectedRoute.jsx"
 
 import HomePage from "./pages/HomePage.jsx"
 import WorkerPage from "./pages/WorkerPage.jsx"
+import InternalPage from "./pages/InternalPage.jsx"
 import VisitorRegisterPage from "./pages/VisitorRegisterPage.jsx"
 import ReportPage from "./pages/ReportPage.jsx"
 import AiModelPage from "./pages/AiModelPage.jsx"
@@ -544,6 +545,7 @@ function AppRoutes() {
             />
           }
         >
+          <Route path="/internal" element={<InternalPage onAuthButtonClick={onAuthButtonClick} />} />
           <Route
             path="/worker"
             element={

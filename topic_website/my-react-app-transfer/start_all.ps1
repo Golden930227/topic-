@@ -11,10 +11,11 @@ $services = @(
     @{ Name='api'; Dir=$pages; Port=8000; Exe=$python; Args=@('-m','uvicorn','sql_api:app','--host','127.0.0.1','--port','8000'); Path='/openapi.json' },
     @{ Name='main'; Dir=$root; Port=5173 },
     @{ Name='ai'; Dir=(Join-Path $pages 'ai_model\ai_monitor_web'); Port=5174 },
-    @{ Name='cnn'; Dir=(Join-Path $pages 'cnn_monitor\cnn_monitor_web'); Port=5175 }
+    @{ Name='cnn'; Dir=(Join-Path $pages 'cnn_monitor\cnn_monitor_web'); Port=5175 },
+    @{ Name='sql-monitor'; Dir=$root; Port=8502; Exe=$python; Args=@('-m','streamlit','run','streamlist.py','--server.address','127.0.0.1','--server.port','8502','--server.headless','true'); Path='/_stcore/health' }
 )
 foreach ($service in $services) {
-    if ($service.Name -ne 'api') {
+    if ($service.Name -in @('main', 'ai', 'cnn')) {
         $vite = Join-Path $service.Dir 'node_modules\vite\bin\vite.js'
         if (-not (Test-Path -LiteralPath $vite)) { throw "Missing Vite dependencies: $($service.Dir). Run npm install in that folder." }
         $service.Exe = $node
@@ -27,7 +28,7 @@ foreach ($service in $services) {
     $listener = Get-NetTCPConnection -State Listen -LocalPort $service.Port -ErrorAction SilentlyContinue
     if ($listener) {
         $owner = Get-CimInstance Win32_Process -Filter "ProcessId = $($listener[0].OwningProcess)"
-        $expected = if ($service.Name -eq 'api') { 'sql_api:app' } else { Join-Path $service.Dir 'node_modules\vite\bin\vite.js' }
+        $expected = if ($service.Name -eq 'api') { 'sql_api:app' } elseif ($service.Name -eq 'sql-monitor') { 'streamlist.py' } else { Join-Path $service.Dir 'node_modules\vite\bin\vite.js' }
         if (-not $owner -or $owner.CommandLine -notlike "*$expected*") { throw "Port $($service.Port) is occupied by another process. See PID $($listener[0].OwningProcess)." }
         Write-Host "Reusing $($service.Name): $url"
     } else {
@@ -53,9 +54,9 @@ try {
 try {
     & (Join-Path $root 'start_pipeline_monitor.ps1')
 } catch {
-    Write-Warning "Pipeline Monitoring Center could not start: $($_.Exception.Message) Other WindMind services are still running."
+    Write-Warning "Pipeline monitor startup failed: $_. Other WindMind services are still running."
 }
 if (-not $NoBrowser) {
-    foreach ($url in @('http://127.0.0.1:5173/','http://127.0.0.1:5174/','http://127.0.0.1:5175/','http://127.0.0.1:8000/docs')) { Start-Process $url }
+    Start-Process 'http://127.0.0.1:5173/internal'
 }
 Write-Host "WindMind started. Logs: $logs"
