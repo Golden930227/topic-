@@ -5,7 +5,7 @@ import Logo from "../components/common/Logo.jsx"
 import { db } from "../firebase.js"
 import "../styles/report.css"
 
-function ReportPage() {
+function ReportPage({ user, role }) {
   const [notice, setNotice] = useState("")
   const [submitting, setSubmitting] = useState(false)
 
@@ -23,6 +23,8 @@ function ReportPage() {
         type: formData.get("type"),
         title: formData.get("title")?.trim(),
         description: formData.get("description")?.trim(),
+        uid: user.uid,
+        role,
         status: "new",
         createdAt: serverTimestamp(),
       })
@@ -39,14 +41,14 @@ function ReportPage() {
 
   return (
     <div className="report-page">
-      <header className="report-navbar"><Logo /><Link to="/worker">返回工作頁</Link></header>
+      <header className="report-navbar"><Logo /><Link to={role === "member" ? "/worker" : "/visitor"}>返回專區</Link></header>
       <main className="report-main">
         <section className="report-panel">
           <p className="report-eyebrow">FEEDBACK</p>
           <h1>問題與回報</h1>
           <p className="report-intro">請填寫問題資訊，我們會查看並處理你的回報。</p>
           <form className="report-form" onSubmit={handleSubmit}>
-            <label>問題類型<select name="type" defaultValue="" required><option value="" disabled>請選擇問題類型</option><option>智慧感測器</option><option>人工智能模型</option><option>CNN 監測</option><option>其他</option></select></label>
+            <label>問題類型<select name="type" defaultValue="" required><option value="" disabled>請選擇問題類型</option><option>風機數據監測</option><option>AI 模型監測</option><option>網站操作</option><option>其他</option></select></label>
             <label>標題<input name="title" type="text" placeholder="簡短描述問題" required /></label>
             <label>問題描述<textarea name="description" rows="7" placeholder="請說明發生情況與操作步驟" required /></label>
             <button type="submit" disabled={submitting}>{submitting ? "送出中…" : "送出回報"}</button>

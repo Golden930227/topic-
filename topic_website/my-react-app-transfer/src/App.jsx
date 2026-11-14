@@ -39,6 +39,8 @@ import VisitorRegisterPage from "./pages/VisitorRegisterPage.jsx"
 import ReportPage from "./pages/ReportPage.jsx"
 import AiModelPage from "./pages/AiModelPage.jsx"
 import CNNMonitorPage from "./pages/CNNMonitorPage.jsx"
+import RemoteLivePage from "./pages/RemoteLivePage.jsx"
+import RemoteWorkerApp from "./RemoteWorkerApp.jsx"
 
 import "./App.css"
 import "./pages/VisitorPages.css"
@@ -54,6 +56,18 @@ const allowedEmails = [
 
   "xindongh522@gmail.com",
 ]
+
+const workerTunnelUrl = import.meta.env.VITE_WORKER_TUNNEL_URL
+
+function getWorkerTunnelUrl() {
+  try {
+    const url = new URL(workerTunnelUrl)
+    if (url.protocol !== 'https:' || !url.hostname.endsWith('.trycloudflare.com')) return null
+    return `${url.origin}/internal`
+  } catch {
+    return null
+  }
+}
 
 function isAllowedMember(email) {
   const normalizedEmail =
@@ -84,7 +98,9 @@ async function getAccessStatus(
     )
   )
 
-  return visitorDocument.exists()
+  if (!visitorDocument.exists()) return "missing"
+  const visitor = visitorDocument.data()
+  return visitor.organization?.trim() && visitor.identity?.trim() && visitor.purpose?.trim()
     ? "visitor"
     : "missing"
 }
@@ -286,14 +302,12 @@ function AppRoutes() {
     let cancelled = false
 
     if (!user) {
-      setAccessStatus(
-        "signed-out"
-      )
-
       return undefined
     }
 
-    setAccessStatus("checking")
+    queueMicrotask(() => {
+      if (!cancelled) setAccessStatus("checking")
+    })
 
     getAccessStatus(user)
       .then((status) => {
@@ -323,10 +337,21 @@ function AppRoutes() {
     ) => {
       /*
        * 已登入時：
-       * - 按同組按鈕：登出
+       * - 按同組按鈕：進入受 Cloudflare 保護的員工內網
        * - 按訪客按鈕：進訪客頁
+       * - 按登出按鈕：登出
        */
       if (user) {
+        if (loginMode === "member") {
+          if (!isAllowedMember(user.email)) {
+            window.alert("此帳號沒有工作人員權限，請聯絡管理員。")
+            return
+          }
+          const destination = getWorkerTunnelUrl()
+          if (destination) window.location.assign(destination)
+          else window.alert("員工遠端入口目前未啟動，請稍後再試。")
+          return
+        }
         if (
           loginMode === "visitor"
         ) {
@@ -409,9 +434,16 @@ function AppRoutes() {
 
           setAccessStatus("member")
 
-          navigate("/worker", {
-            replace: true,
-          })
+          if (import.meta.env.VITE_WORKER_REMOTE === '1') {
+            navigate("/worker", { replace: true })
+          } else {
+            const destination = getWorkerTunnelUrl()
+            if (destination) {
+              window.location.assign(destination)
+            } else {
+              window.alert('員工遠端入口目前未啟動，請稍後再試。')
+            }
+          }
 
           return
         }
@@ -472,15 +504,11 @@ function AppRoutes() {
       />
 
       <Route
-        path="/report"
-        element={<ReportPage />}
-      />
-
-      <Route
         element={
           <ProtectedRoute
             user={user}
             authReady={authReady}
+            onMemberLogin={onAuthButtonClick}
           />
         }
       >
@@ -518,18 +546,13 @@ function AppRoutes() {
               />
             }
           />
-
-          <Route
-            path="/ai-model"
-            element={
-              <AiModelPage />
-            }
-          />
-
+          <Route path="/report" element={<ReportPage user={user} role={accessStatus} />} />
           <Route
             path="/cnn-monitor"
             element={
-              <CNNMonitorPage />
+              import.meta.env.VITE_WORKER_REMOTE === '1'
+                ? <RemoteLivePage kind="cnn" />
+                : <CNNMonitorPage />
             }
           />
         </Route>
@@ -546,6 +569,7 @@ function AppRoutes() {
           }
         >
           <Route path="/internal" element={<InternalPage onAuthButtonClick={onAuthButtonClick} />} />
+          <Route path="/ai-model" element={import.meta.env.VITE_WORKER_REMOTE === '1' ? <RemoteLivePage kind="ai" /> : <AiModelPage />} />
           <Route
             path="/worker"
             element={
@@ -574,6 +598,7 @@ function AppRoutes() {
 }
 
 function App() {
+  if (import.meta.env.VITE_WORKER_REMOTE === '1') return <RemoteWorkerApp />
   return (
     <BrowserRouter>
       <AppRoutes />

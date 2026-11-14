@@ -23,7 +23,7 @@ function App() {
             <h1>風機即時監測</h1>
             <p>換向器式直流發電機 · DC 實機量測</p>
           </div>
-          <div className="monitor-hero-actions"><span className="monitor-live-badge"><i /> 系統運行中</span></div>
+          <div className="monitor-hero-actions"><span className="monitor-live-badge">示範資料，非即時量測</span></div>
         </header>
 
         <MeasurementCards measurement={latestMeasurement} />

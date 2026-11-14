@@ -15,9 +15,6 @@ function Navbar({
   user,
   onAuthButtonClick,
 }) {
-  const [openMenu, setOpenMenu] =
-    useState(null)
-
   const [
     mobileMenuOpen,
     setMobileMenuOpen,
@@ -26,20 +23,11 @@ function Navbar({
   const navbarRef = useRef(null)
   const location = useLocation()
 
-  /*
-   * 只有真正進入 /visitor 時，
-   * 才顯示智慧感測器和 CNN 選單。
-   */
   const isVisitorPage =
     location.pathname === "/visitor"
 
-  const closeMenu = () => {
-    setOpenMenu(null)
-  }
-
   function closeMobileMenu() {
     setMobileMenuOpen(false)
-    setOpenMenu(null)
   }
 
   useEffect(() => {
@@ -50,7 +38,6 @@ function Navbar({
           event.target
         )
       ) {
-        setOpenMenu(null)
         setMobileMenuOpen(false)
       }
     }
@@ -68,50 +55,13 @@ function Navbar({
     }
   }, [])
 
-  const dropdown = (
-    name,
-    label,
-    children
-  ) => (
-    <div className="small-dropdown">
-      <button
-        type="button"
-        className={`small-dropdown-button ${
-          openMenu === name ? "active" : ""
-        }`}
-        onClick={() => {
-          setOpenMenu(
-            openMenu === name ? null : name
-          )
-        }}
-        aria-expanded={openMenu === name}
-      >
-        {label}
-
-        <span className="dropdown-arrow">
-          ⌄
-        </span>
-      </button>
-
-      {openMenu === name && (
-        <div className="small-dropdown-menu">
-          {children}
-        </div>
-      )}
-    </div>
-  )
-
   const handleMemberClick = async (
     event
   ) => {
     event.preventDefault()
     event.stopPropagation()
 
-    try {
-      await onAuthButtonClick("member")
-    } finally {
-      closeMenu()
-    }
+    await onAuthButtonClick("member")
   }
 
   const handleVisitorClick = async (
@@ -156,50 +106,10 @@ function Navbar({
           整體方塊圖
         </a>
 
-        {/* 只有訪客頁顯示這兩個選單 */}
         {isVisitorPage && (
           <>
-            {dropdown(
-              "sensor",
-              "智慧感測器",
-              <>
-                <a
-                  href="http://localhost:8501"
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={closeMenu}
-                >
-                  智慧感測器
-                </a>
-
-                <Link
-                  to="/ai-model"
-                  onClick={closeMenu}
-                >
-                  人工智能模型
-                </Link>
-              </>
-            )}
-
-            {dropdown(
-              "cnn",
-              "CNN監測與問題回報",
-              <>
-                <Link
-                  to="/cnn-monitor"
-                  onClick={closeMenu}
-                >
-                  CNN監測
-                </Link>
-
-                <Link
-                  to="/report"
-                  onClick={closeMenu}
-                >
-                  問題回報
-                </Link>
-              </>
-            )}
+            <Link to="/cnn-monitor">風機數據監測</Link>
+            <Link to="/report">問題回報</Link>
           </>
         )}
 
@@ -208,7 +118,15 @@ function Navbar({
           target="_blank"
           rel="noreferrer"
         >
-          專題教授
+          王鴻立教授
+        </a>
+
+        <a
+          href="https://ee.nfu.edu.tw/zh_tw/teacher01/faculty/%E6%B1%AA%E6%A5%B7%E8%8C%97-82164242"
+          target="_blank"
+          rel="noreferrer"
+        >
+          汪楷茗教授
         </a>
 
         <a
@@ -218,6 +136,7 @@ function Navbar({
         >
           參考資料
         </a>
+        <a href="https://lin.ee/VImRwnH" target="_blank" rel="noopener noreferrer">LINE 客服</a>
       </nav>
 
       <div className="actions">
@@ -226,8 +145,10 @@ function Navbar({
           className="login"
           onClick={handleMemberClick}
         >
-          {user ? "登出" : "同組登入"}
+          {user ? "進入員工內網" : "同組登入"}
         </button>
+
+        {user && <button type="button" className="login" onClick={() => onAuthButtonClick("logout")}>登出</button>}
 
         <button
           type="button"
@@ -254,7 +175,6 @@ function Navbar({
             (isOpen) => !isOpen
           )
 
-          setOpenMenu(null)
         }}
       >
         ☰

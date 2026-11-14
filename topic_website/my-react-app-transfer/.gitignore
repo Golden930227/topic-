@@ -19,6 +19,11 @@ dist-ssr
 
 # Local monitor access codes, event history, and process logs
 .windmind-logs/
+.windmind-remote-dist/
+.windmind-venv/
 *.sqlite3
 *.sqlite3-wal
 *.sqlite3-shm
+
+.vercel
+.env*
