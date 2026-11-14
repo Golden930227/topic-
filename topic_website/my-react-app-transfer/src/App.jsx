@@ -20,13 +20,7 @@ import {
 } from "firebase/auth"
 
 import {
-  doc,
-  getDoc,
-} from "firebase/firestore"
-
-import {
   auth,
-  db,
   googleProvider,
 } from "./firebase.js"
 
@@ -35,7 +29,6 @@ import ProtectedRoute from "./components/common/ProtectedRoute.jsx"
 import HomePage from "./pages/HomePage.jsx"
 import WorkerPage from "./pages/WorkerPage.jsx"
 import InternalPage from "./pages/InternalPage.jsx"
-import VisitorRegisterPage from "./pages/VisitorRegisterPage.jsx"
 import ReportPage from "./pages/ReportPage.jsx"
 import AiModelPage from "./pages/AiModelPage.jsx"
 import CNNMonitorPage from "./pages/CNNMonitorPage.jsx"
@@ -81,28 +74,13 @@ function isAllowedMember(email) {
   )
 }
 
-async function getAccessStatus(
-  currentUser
-) {
-  if (
-    isAllowedMember(currentUser.email)
-  ) {
-    return "member"
+async function getAccessStatus(currentUser) {
+  await auth.authStateReady()
+  const activeUser = auth.currentUser
+  if (!activeUser || activeUser.uid !== currentUser?.uid) {
+    throw new Error('登入帳號已改變，請重新登入。')
   }
-
-  const visitorDocument = await getDoc(
-    doc(
-      db,
-      "visitors",
-      currentUser.uid
-    )
-  )
-
-  if (!visitorDocument.exists()) return "missing"
-  const visitor = visitorDocument.data()
-  return visitor.organization?.trim() && visitor.identity?.trim() && visitor.purpose?.trim()
-    ? "visitor"
-    : "missing"
+  return isAllowedMember(activeUser.email) ? 'member' : 'visitor'
 }
 
 function AccessLoading() {
@@ -148,22 +126,11 @@ function VisitorAccessGate({
     return <Outlet />
   }
 
-  if (
-    accessStatus === "missing"
-  ) {
-    return (
-      <Navigate
-        to="/visitor-register"
-        replace
-      />
-    )
-  }
-
   return (
     <main className="access-page">
       <section className="access-card">
         <h1>
-          無法確認訪客資料
+          無法確認登入狀態
         </h1>
 
         <p>
@@ -202,7 +169,7 @@ function WorkerAccessGate({
 
   /*
    * /worker 只允許白名單中的 member。
-   * visitor 和 missing 都不能進入。
+   * visitor 不能進入。
    */
   if (
     accessStatus === "member"
@@ -364,16 +331,14 @@ function AppRoutes() {
             setAccessStatus(status)
 
             navigate(
-              status === "missing"
-                ? "/visitor-register"
-                : "/visitor",
+              "/visitor",
               {
                 replace: true,
               }
             )
           } catch (error) {
             window.alert(
-              `確認訪客資料失敗：${error.message}`
+              `確認訪客登入失敗：${error.message}`
             )
           }
 
@@ -451,7 +416,7 @@ function AppRoutes() {
         /*
          * 訪客登入：
          * 不在白名單也不會被拒絕。
-         * 第一次先註冊，之後直接進訪客頁。
+         * Google 登入後直接進訪客頁，不查詢或寫入訪客表單。
          */
         const status =
           await getAccessStatus(
@@ -461,9 +426,7 @@ function AppRoutes() {
         setAccessStatus(status)
 
         navigate(
-          status === "missing"
-            ? "/visitor-register"
-            : "/visitor",
+          "/visitor",
           {
             replace: true,
           }
@@ -482,11 +445,6 @@ function AppRoutes() {
           `登入失敗：${error.message}`
         )
       }
-    }
-
-  const handleVisitorRegistered =
-    () => {
-      setAccessStatus("visitor")
     }
 
   return (
@@ -512,17 +470,7 @@ function AppRoutes() {
           />
         }
       >
-        <Route
-          path="/visitor-register"
-          element={
-            <VisitorRegisterPage
-              user={user}
-              onRegistered={
-                handleVisitorRegistered
-              }
-            />
-          }
-        />
+        <Route path="/visitor-register" element={<Navigate to="/visitor" replace />} />
 
         <Route
           element={
