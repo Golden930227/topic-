@@ -130,7 +130,7 @@ def main():
                         if server.started: break
                         time.sleep(.05)
                     page, errors, calls = mount(browser, 'cnn', token, 18080)
-                    page.get_by_text('等待實機資料', exact=True).wait_for()
+                    page.get_by_text('等待資料', exact=True).wait_for()
                     now = datetime.now(timezone.utc)
                     common = {'source_type':'grand_dc_live','is_real_device':1,
                               'measurement_time':'2000-01-01T00:03:45+00:00',
@@ -147,16 +147,15 @@ def main():
                         store.db.commit()
                     page.wait_for_function("document.querySelector('.monitor-kpi-card strong')?.textContent === '23.45'")
                     store.insert('dc_measurements', {**common,'measurement_uid':'isolated-simulation','source_file':'wind_simulation.csv','vo':99})
-                    page.wait_for_timeout(1200)
-                    assert page.locator('.monitor-kpi-card strong').first.inner_text() == '23.45'
+                    page.wait_for_function("document.querySelector('.monitor-kpi-card strong')?.textContent === '99.00'")
                     stale = (now-timedelta(minutes=20)).isoformat()
                     with store.lock:
-                        store.db.execute("UPDATE #wm_dc_measurements SET received_at=? WHERE measurement_uid='isolated-genuine-device'", stale)
+                        store.db.execute("UPDATE #wm_dc_measurements SET received_at=?", stale)
                         store.db.commit()
-                    page.get_by_text('實機資料超過 30 秒未更新；裝置心跳未提供。', exact=True).wait_for()
-                    assert page.locator('.monitor-kpi-card strong').first.inner_text() == '23.45'
+                    page.get_by_text('資料超過 30 秒未更新；裝置心跳未提供。', exact=True).wait_for()
+                    assert page.locator('.monitor-kpi-card strong').first.inner_text() == '99.00'
                     assert not errors, errors
-                    print('SQL temp insertion -> actual CNN React:', round(delay, 3), 'seconds; same-UID update, simulation exclusion, stale status PASS')
+                    print('SQL temp insertion -> actual CNN React:', round(delay, 3), 'seconds; same-UID update, all new SQL rows displayed, stale status PASS')
                     page.close()
                     page, errors, calls = mount(browser, 'ai', token, 18080)
                     page.get_by_text('尚無預測資料', exact=True).first.wait_for()

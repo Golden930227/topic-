@@ -142,7 +142,7 @@ def read_page(connect, table, fields, limit=200, after=None, archived=False):
         columns = list(dict.fromkeys(c for c in fields + META if c in available or aliases.get(c) in available))
         order = f"COALESCE(NULLIF([inserted_at], ''), [{stamp}], '')" if 'inserted_at' in available else f"COALESCE([{stamp}], '')"
         condition = monitoring_filter(available, stamp)
-        where = ' WHERE ' + (f'CASE WHEN ({condition}) THEN 1 ELSE 0 END = 0' if archived else condition)
+        where = ' WHERE ' + (f'CASE WHEN ({condition}) THEN 1 ELSE 0 END = 0' if archived else '1=1')
         if pair:
             where += f' AND ({order} > ? OR ({order} = ? AND [{uid}] > ?))'
         direction = 'ASC' if pair else 'DESC'
@@ -169,7 +169,7 @@ def cnn_data(connect, fields, role, after=None):
     def load():
         visible = fields if role == 'member' else [field for field in fields if field in {'measurement_uid', 'measurement_time', 'vout2', 'ids', 'load_power_est', 'rpm'}]
         page = read_page(connect, 'dc_measurements', visible, 20 if after else 200, after)
-        return {'connected': True, 'sourcePolicy':'hardware-only', 'latestMeasurement': page['rows'][-1] if page['rows'] else None,
+        return {'connected': True, 'sourcePolicy':'sql-latest', 'latestMeasurement': page['rows'][-1] if page['rows'] else None,
                 'measurementHistory': page['rows'], 'nextCursor': page['nextCursor'], 'hasMore': page['hasMore'],
                 'refreshSeconds': 1, 'windowSeconds':None, 'serverNow':datetime.now(timezone.utc).isoformat()}
     return load()
@@ -179,7 +179,7 @@ def ai_data(connect, pred_fields, event_fields, role, event_after=None):
     def load():
         predictions = read_page(connect, 'ai_predictions', pred_fields, 50 if role == 'member' else 1)['rows']
         events = read_page(connect, 'anomaly_events', event_fields, 200, event_after)
-        return {'connected': True, 'sourcePolicy':'hardware-only', 'currentPrediction': predictions[-1] if predictions else None,
+        return {'connected': True, 'sourcePolicy':'sql-latest', 'currentPrediction': predictions[-1] if predictions else None,
                 'predictionHistory': list(reversed(predictions)), 'recentEvents': list(reversed(events['rows'])),
                 'eventCursor': events['nextCursor'], 'eventsHaveMore': events['hasMore'],
                 'refreshSeconds': 1, 'windowSeconds':None, 'serverNow':datetime.now(timezone.utc).isoformat()}

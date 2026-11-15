@@ -11,22 +11,22 @@ function App({ role = 'visitor', getToken, apiBase = '' }) {
   const live = useLiveData('/api/cnn', {role, getToken, apiBase})
   const {data} = live
   const number = value=>value == null ? null : Number(value)
-  const measurementHistory = (data?.measurementHistory || []).map(row=>({id:row.measurement_uid, time:row.measurement_time ? timeLabel(row,'measurement_time') : `${formatTaipei(row._time?.receivedAt)}????`, sampleMillis:Date.parse(row._time?.receivedAt), vdc:number(row.vout2), idc:number(row.ids), power:number(row.load_power_est), rpm:number(row.rpm)}))
+  const measurementHistory = (data?.measurementHistory || []).map(row=>({id:row.measurement_uid, time:row.measurement_time ? timeLabel(row,'measurement_time') : formatTaipei(row._time?.receivedAt), sampleMillis:Date.parse(row._time?.receivedAt), vdc:number(row.vout2), idc:number(row.ids), power:number(row.load_power_est), rpm:number(row.rpm)}))
   const row = data?.latestMeasurement
   return <main className="cnn-monitor-page"><div className="cnn-monitor-shell">
     <header className="cnn-monitor-hero"><div>
       <a href="/">返回首頁</a><span className="monitor-eyebrow">DC WIND TURBINE MONITORING</span>
-      <h1>CNN 即時監測</h1><p>風機實體量測</p>
+      <h1>CNN 即時監測</h1><p>風機量測資料</p>
       <p>最後取樣時間：{timeLabel(row,'measurement_time')}</p>
-      <p>曲線保留最近 200 筆實機量測</p>
+      <p>曲線保留最近 200 筆量測</p>
     </div></header>
     <RefreshStatus live={live} />
-    {!row && <p className="waiting-hardware" role="status">等待實機資料</p>}
+    {!row && <p className="waiting-hardware" role="status">等待資料</p>}
     {row && <>
       <MeasurementCards measurement={measurementHistory.at(-1)} />
       <section className="monitor-chart-grid" aria-label="量測曲線">
-        <LineChart title="DC Voltage vs Time" description="最近 200 筆實機電壓量測" data={measurementHistory} dataKey="vdc" unit="V" color="#7548d1" />
-        <LineChart title="DC Current vs Time" description="最近 200 筆實機電流量測" data={measurementHistory} dataKey="idc" unit="A" color="#23875a" />
+        <LineChart title="DC Voltage vs Time" description="最近 200 筆電壓量測" data={measurementHistory} dataKey="vdc" unit="V" color="#7548d1" />
+        <LineChart title="DC Current vs Time" description="最近 200 筆電流量測" data={measurementHistory} dataKey="idc" unit="A" color="#23875a" />
       </section>
     </>}
     <section className="monitor-panel"><h2>資料來源與硬體狀態</h2>
