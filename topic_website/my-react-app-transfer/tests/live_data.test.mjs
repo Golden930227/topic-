@@ -14,8 +14,8 @@ test('later normal predictions cannot discard an anomaly retained across polls',
   const first = [{event_uid:'event-a', confirmation_time:'2000-01-01T00:00:01Z'}]
   assert.equal(mergeEvents(first, []).length, 1)
   assert.equal(mergeEvents(first, first).length, 1)
-  assert.equal(refreshSeconds('member'), 3)
-  assert.equal(refreshSeconds('visitor'), 3)
+  assert.equal(refreshSeconds('member'), 1)
+  assert.equal(refreshSeconds('visitor'), 1)
 })
 test('Taipei formatting respects both UTC and already-offset timestamps', () => {
   assert.equal(formatTaipei('2026-11-15T08:13:33.492Z'), '2026-11-15 16:13:33')

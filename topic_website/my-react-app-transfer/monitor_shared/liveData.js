@@ -36,7 +36,7 @@ export function freshnessLabel(row) {
   return Date.now()-stamp <= 30000 ? '最近收到實機資料' : '實機資料超過 30 秒未更新'
 }
 
-export function refreshSeconds() { return 3 }
+export function refreshSeconds() { return 1 }
 
 export function mergeResponse(path, previous, incoming, incremental) {
   if (previous && incoming.windowSeconds === 600 && incoming.serverNow) {
