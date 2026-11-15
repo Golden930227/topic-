@@ -9,7 +9,6 @@ export function useLiveData(path, { role = 'visitor', getToken, apiBase = '' } =
     let timer
     let controller
     let data = null
-    let cnnCursor = null
     let eventCursor = null
     const load = async () => {
       const started = Date.now()
@@ -22,7 +21,6 @@ export function useLiveData(path, { role = 'visitor', getToken, apiBase = '' } =
         let more = true
         while (more && active) {
           const params = new URLSearchParams()
-          if (path === '/api/cnn' && role === 'member' && cnnCursor) params.set('after', cnnCursor)
           if (path === '/api/ai' && eventCursor) params.set('event_after', eventCursor)
           const response = await fetch(`${apiBase}${path}${params.size ? '?' + params : ''}`, {
             headers: { Authorization: `Bearer ${token}` }, credentials: 'include',
@@ -33,12 +31,10 @@ export function useLiveData(path, { role = 'visitor', getToken, apiBase = '' } =
           if (!incoming.connected) throw new Error('SQL 連線異常')
           if (incoming.sourcePolicy !== 'hardware-only') throw new Error('資料來源檢查尚未就緒')
           if (!active) return
-          const merged = mergeResponse(path, data, incoming, role === 'member' && Boolean(cnnCursor))
+          const merged = mergeResponse(path, data, incoming, false)
           data = merged.data
           if (path === '/api/cnn') {
-            const previousCursor = cnnCursor
-            cnnCursor = incoming.nextCursor || cnnCursor
-            more = incoming.hasMore && cnnCursor !== previousCursor
+            more = false
           } else {
             const previousCursor = eventCursor
             eventCursor = incoming.eventCursor || eventCursor

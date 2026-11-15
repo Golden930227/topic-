@@ -7,7 +7,7 @@ import PredictionHistory from './components/PredictionHistory'
 import RecentEvents from './components/RecentEvents'
 
 import { categoryConfig as baseCategories } from './data/categories'
-import { timeLabel, formatTaipei } from '../../../../../../../monitor_shared/liveData.js'
+import { timeLabel, formatTaipei, freshnessLabel } from '../../../../../../../monitor_shared/liveData.js'
 const categoryConfig = { ...baseCategories, unknown: {label:'未提供', english:'Unknown', color:'#777', softColor:'#eee', icon:AlertTriangle} }
 import { useLiveData } from './useLiveData'
 import ArchivedData from '../../../../../../../monitor_shared/ArchivedData.jsx'
@@ -42,7 +42,7 @@ function App({ role = 'visitor', getToken, apiBase = '' }) {
 
         <div className="system-state">
           <Activity size={16} />
-          {error ? '刷新失敗，重試中' : row ? '實機判斷資料' : '等待實機資料'}
+          {error ? '刷新失敗，重試中' : row ? freshnessLabel(row) : '尚無預測資料'}
         </div>
       </header>
 
@@ -50,7 +50,7 @@ function App({ role = 'visitor', getToken, apiBase = '' }) {
         <RefreshStatus live={live} />
         <p>最後判斷時間：{timeLabel(row,'prediction_time')}</p>
         <p>接收時間：{formatTaipei(row?._time?.receivedAt)} · SQL 寫入時間：{formatTaipei(row?._time?.insertedAt)}</p>
-        {!row && <p className="waiting-hardware" role="status">等待實機資料</p>}
+        {!row && <p className="waiting-hardware" role="status">尚無預測資料</p>}
 
         <section className="hero-copy">
           <div className="eyebrow">

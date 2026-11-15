@@ -117,7 +117,9 @@ def reception_expression(available):
 
 
 def monitoring_filter(available, stamp):
-    return hardware_filter(available, stamp) + f" AND {reception_expression(available)} BETWEEN DATEADD(minute,-10,SYSDATETIMEOFFSET()) AND DATEADD(second,5,SYSDATETIMEOFFSET())"
+    # Keep the last genuine reading visible when reception stops; time_info
+    # marks it stale. Insertion time never makes a replay fresh.
+    return hardware_filter(available, stamp) + f" AND {reception_expression(available)} BETWEEN CONVERT(datetimeoffset,'2001-01-01T00:00:00+00:00') AND DATEADD(second,5,SYSDATETIMEOFFSET())"
 
 
 def read_page(connect, table, fields, limit=200, after=None, archived=False):
@@ -169,8 +171,8 @@ def cnn_data(connect, fields, role, after=None):
         page = read_page(connect, 'dc_measurements', visible, 20 if after else 200, after)
         return {'connected': True, 'sourcePolicy':'hardware-only', 'latestMeasurement': page['rows'][-1] if page['rows'] else None,
                 'measurementHistory': page['rows'], 'nextCursor': page['nextCursor'], 'hasMore': page['hasMore'],
-                'refreshSeconds': 1, 'windowSeconds':600, 'serverNow':datetime.now(timezone.utc).isoformat()}
-    return cached(('cnn',), load) if role == 'visitor' else load()
+                'refreshSeconds': 1, 'windowSeconds':None, 'serverNow':datetime.now(timezone.utc).isoformat()}
+    return load()
 
 
 def ai_data(connect, pred_fields, event_fields, role, event_after=None):
@@ -180,8 +182,8 @@ def ai_data(connect, pred_fields, event_fields, role, event_after=None):
         return {'connected': True, 'sourcePolicy':'hardware-only', 'currentPrediction': predictions[-1] if predictions else None,
                 'predictionHistory': list(reversed(predictions)), 'recentEvents': list(reversed(events['rows'])),
                 'eventCursor': events['nextCursor'], 'eventsHaveMore': events['hasMore'],
-                'refreshSeconds': 1, 'windowSeconds':600, 'serverNow':datetime.now(timezone.utc).isoformat()}
-    return cached(('ai', event_after), load) if role == 'visitor' else load()
+                'refreshSeconds': 1, 'windowSeconds':None, 'serverNow':datetime.now(timezone.utc).isoformat()}
+    return load()
 
 
 def archived_data(connect, kind, fields, role, event_fields=None):

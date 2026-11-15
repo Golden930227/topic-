@@ -30,7 +30,7 @@ export function formatTaipei(value) {
 export function timeLabel(row, field) { return formatTaipei(row?.[field]) }
 
 export function freshnessLabel(row) {
-  const basis = row?._time?.receivedAt || row?._time?.sampleAt
+  const basis = row?._time?.receivedAt
   const stamp = basis && Date.parse(basis)
   if (!Number.isFinite(stamp) || Date.now()-stamp < -5000) return '硬體狀態未提供'
   return Date.now()-stamp <= 30000 ? '最近收到實機資料' : '實機資料超過 30 秒未更新'
@@ -57,13 +57,11 @@ export function mergeResponse(path, previous, incoming, incremental) {
     const old = previous?.measurementHistory || []
     const ids = new Set(old.map(row => row.measurement_uid))
     const added = incoming.measurementHistory.some(row => !ids.has(row.measurement_uid))
-    if (previous && !added) return {data:previous, added:false}
     const rows = incremental ? mergeMeasurements(old, incoming.measurementHistory) : incoming.measurementHistory
     return {data:{...incoming, measurementHistory:rows, latestMeasurement:rows.at(-1) || null},added}
   }
   const oldPredictions = new Set((previous?.predictionHistory || []).map(row => row.prediction_uid))
   const oldEvents = new Set((previous?.recentEvents || []).map(row => row.event_uid))
   const added = (incoming.predictionHistory || []).some(row=>!oldPredictions.has(row.prediction_uid)) || (incoming.recentEvents || []).some(row=>!oldEvents.has(row.event_uid))
-  if (previous && !added) return {data:previous,added:false}
   return {data:{...incoming,recentEvents:mergeEvents(previous?.recentEvents || [],incoming.recentEvents || [])},added}
 }

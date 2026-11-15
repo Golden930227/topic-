@@ -20,15 +20,15 @@ class LiveDataTests(unittest.TestCase):
     def setUp(self):
         live._cache.clear()
 
-    def test_visitor_cache_shared_and_employee_bypasses_it(self):
+    def test_live_snapshots_always_query_sql_for_both_roles(self):
         sample = {'rows': [], 'nextCursor': None, 'hasMore': False}
         with patch.object(live, 'read_page', return_value=sample) as query:
             first = live.cnn_data(None, [], 'visitor')
             live.cnn_data(None, [], 'visitor')
-            self.assertEqual(query.call_count, 1)
+            self.assertEqual(query.call_count, 2)
             self.assertEqual(first['refreshSeconds'], 1)
             self.assertEqual(live.cnn_data(None, [], 'member')['refreshSeconds'], 1)
-            self.assertEqual(query.call_count, 2)
+            self.assertEqual(query.call_count, 3)
             self.assertEqual(query.call_args.args[3], 200)
             live.cnn_data(None, [], 'member', live.cursor_for('stamp', 'uid'))
             self.assertEqual(query.call_args.args[3], 20)
@@ -78,7 +78,7 @@ class LiveDataTests(unittest.TestCase):
         self.assertNotIn('2001-01-01', sql)
         self.assertIn('grand_dc_live', sql)
         self.assertIn("NOT LIKE '%aug_train%'", sql)
-        self.assertIn('DATEADD(minute,-10,SYSDATETIMEOFFSET())', live.monitoring_filter({'measurement_time','is_real_device','source_type'}, 'measurement_time'))
+        self.assertNotIn('DATEADD(minute,-10,SYSDATETIMEOFFSET())', live.monitoring_filter({'measurement_time','is_real_device','source_type'}, 'measurement_time'))
 
     def test_ai_normal_current_still_returns_separately_stored_events(self):
         def page(connect, table, fields, limit, after=None):

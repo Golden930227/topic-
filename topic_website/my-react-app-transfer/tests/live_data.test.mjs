@@ -23,11 +23,11 @@ test('Taipei formatting respects both UTC and already-offset timestamps', () => 
   assert.equal(formatTaipei('2026-11-15T08:13:33'), '未提供')
   assert.equal(formatTaipei('2000-01-01T00:01:00Z'), '未提供')
 })
-test('successful unchanged responses preserve the graph and values reference', () => {
+test('successful responses apply the current SQL snapshot', () => {
   const row = {measurement_uid:'device-1',vout2:2.1}
   const previous = {measurementHistory:[row],latestMeasurement:row}
   const merged = mergeResponse('/api/cnn',previous,{measurementHistory:[{...row}],latestMeasurement:{...row}},false)
-  assert.equal(merged.data,previous)
+  assert.deepEqual(merged.data.measurementHistory,previous.measurementHistory)
   assert.equal(merged.added,false)
 })
 
@@ -45,4 +45,20 @@ test('relative device time retains fresh received measurements across polls', ()
   const previous={measurementHistory:[row],latestMeasurement:row}
   const incoming={measurementHistory:[],windowSeconds:600,serverNow:'2026-11-15T08:13:36Z'}
   assert.equal(mergeResponse('/api/cnn',previous,incoming,true).data.latestMeasurement,row)
+})
+
+test('same UID corrections and removals update visible values', () => {
+ const old={measurement_uid:'same',vout2:1}
+ const incoming={measurementHistory:[{...old,vout2:2}],serverNow:'new'}
+ const result=mergeResponse('/api/cnn',{measurementHistory:[old]},incoming,false)
+ assert.equal(result.data.latestMeasurement.vout2,2)
+ assert.equal(result.data.serverNow,'new')
+ assert.equal(mergeResponse('/api/cnn',result.data,{measurementHistory:[]},false).data.latestMeasurement,null)
+ const pred={prediction_uid:'same',confidence:0.5}
+ assert.equal(mergeResponse('/api/ai',{predictionHistory:[pred],recentEvents:[]},{currentPrediction:{...pred,confidence:0.9},predictionHistory:[{...pred,confidence:0.9}],recentEvents:[]},false).data.currentPrediction.confidence,0.9)
+})
+test('last genuine snapshot remains visible and stale without a rolling expiry window', () => {
+ const row={measurement_uid:'stale',_time:{receivedAt:'2026-11-15T08:00:00Z'}}
+ const incoming={measurementHistory:[row],windowSeconds:null,serverNow:'2026-11-15T10:00:00Z'}
+ assert.equal(mergeResponse('/api/cnn',null,incoming,false).data.latestMeasurement,row)
 })
