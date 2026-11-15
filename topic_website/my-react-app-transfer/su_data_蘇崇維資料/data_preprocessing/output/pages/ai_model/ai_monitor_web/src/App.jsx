@@ -7,7 +7,7 @@ import PredictionHistory from './components/PredictionHistory'
 import RecentEvents from './components/RecentEvents'
 
 import { categoryConfig as baseCategories } from './data/categories'
-import { timeLabel, formatTaipei, freshnessLabel } from '../../../../../../../monitor_shared/liveData.js'
+import { formatTaipei, freshnessLabel } from '../../../../../../../monitor_shared/liveData.js'
 const categoryConfig = { ...baseCategories, unknown: {label:'未提供', english:'Unknown', color:'#777', softColor:'#eee', icon:AlertTriangle} }
 import { useLiveData } from './useLiveData'
 import ArchivedData from '../../../../../../../monitor_shared/ArchivedData.jsx'
@@ -19,8 +19,8 @@ function App({ role = 'visitor', getToken, apiBase = '' }) {
   const live = useLiveData('/api/ai', {role, getToken, apiBase})
   const {data, error, refreshSeconds} = live
   const row = data?.currentPrediction
-  const currentPrediction = row ? {result:key(row.predicted_class_key), displayLabel:row.predicted_class_zh || '未提供', confidence:pct(row.confidence), summary:row.final_result || row.decision_state || '未提供', lastUpdated:timeLabel(row,'prediction_time'), probabilities:Object.entries(probabilities(row)).map(([type,value])=>({type,value}))} : null
-  const predictionHistory = (data?.predictionHistory || []).map(row=>({id:row.prediction_uid, time:timeLabel(row,'prediction_time'), result:key(row.predicted_class_key), confidence:pct(row.confidence), probabilities:probabilities(row), status:row.decision_state || '未提供', statusKey:row.review_required?'pending':'ended'}))
+  const currentPrediction = row ? {result:key(row.predicted_class_key), displayLabel:row.predicted_class_zh || '未提供', confidence:pct(row.confidence), summary:row.final_result || row.decision_state || '未提供', lastUpdated:formatTaipei(row._time?.insertedAt), probabilities:Object.entries(probabilities(row)).map(([type,value])=>({type,value}))} : null
+  const predictionHistory = (data?.predictionHistory || []).map(row=>({id:row.prediction_uid, time:formatTaipei(row._time?.insertedAt), result:key(row.predicted_class_key), confidence:pct(row.confidence), probabilities:probabilities(row), status:row.decision_state || '未提供', statusKey:row.review_required?'pending':'ended'}))
   const recentEvents = (data?.recentEvents || []).map(row=>({id:row.event_uid, time:formatTaipei(row._time?.occurredAt), type:key(row.class_key), status:'已確認', statusKey:'ended', description:row.class_name_zh || '未提供'}))
   return (
     <div className="app-shell">
@@ -48,8 +48,8 @@ function App({ role = 'visitor', getToken, apiBase = '' }) {
 
       <main id="top" className="dashboard">
         <RefreshStatus live={live} />
-        <p>最後判斷時間：{timeLabel(row,'prediction_time')}</p>
-        <p>接收時間：{formatTaipei(row?._time?.receivedAt)} · SQL 寫入時間：{formatTaipei(row?._time?.insertedAt)}</p>
+        <p>最新 SQL 入庫時間：{formatTaipei(row?._time?.insertedAt)}</p>
+        <p>CSV 內接收時間：{formatTaipei(row?._time?.receivedAt)} · SQL 寫入時間：{formatTaipei(row?._time?.insertedAt)}</p>
         {!row && <p className="waiting-hardware" role="status">尚無預測資料</p>}
 
         <section className="hero-copy">

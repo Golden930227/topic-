@@ -80,7 +80,7 @@ export default function CurrentPrediction({
 
           <div className="prediction-time">
             <Clock3 size={15} />
-            最後判斷時間：{prediction.lastUpdated}
+            SQL 入庫時間：{prediction.lastUpdated}
           </div>
         </article>
 

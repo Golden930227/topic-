@@ -144,6 +144,9 @@ def main():
                     started = time.monotonic()
                     store.insert('dc_measurements', {**common,'measurement_uid':'isolated-genuine-device','vo':12.34})
                     page.wait_for_function("document.querySelector('.monitor-kpi-card strong')?.textContent === '12.34'")
+                    sql_time = now.astimezone(timezone(timedelta(hours=8))).strftime('%Y-%m-%d %H:%M:%S')
+                    page.get_by_text('最新 SQL 入庫時間：' + sql_time, exact=True).wait_for()
+                    assert page.locator('.monitor-table thead th').first.inner_text() == 'SQL 入庫時間（台灣）'
                     delay = time.monotonic()-started
                     assert delay < 1.8, delay
                     # Same UID update must also be rendered on the next snapshot.
