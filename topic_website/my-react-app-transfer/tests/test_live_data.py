@@ -26,8 +26,8 @@ class LiveDataTests(unittest.TestCase):
             first = live.cnn_data(None, [], 'visitor')
             live.cnn_data(None, [], 'visitor')
             self.assertEqual(query.call_count, 1)
-            self.assertEqual(first['refreshSeconds'], 1)
-            self.assertEqual(live.cnn_data(None, [], 'member')['refreshSeconds'], 1)
+            self.assertEqual(first['refreshSeconds'], 3)
+            self.assertEqual(live.cnn_data(None, [], 'member')['refreshSeconds'], 3)
             self.assertEqual(query.call_count, 2)
             self.assertEqual(query.call_args.args[3], 200)
             live.cnn_data(None, [], 'member', live.cursor_for('stamp', 'uid'))
@@ -75,7 +75,9 @@ class LiveDataTests(unittest.TestCase):
         self.assertIn('TRY_CONVERT(int,[is_real_device]) = 1', sql)
         self.assertIn("NOT LIKE '%synthetic%'", sql)
         self.assertIn("NOT LIKE '%replay%'", sql)
-        self.assertIn('2001-01-01', sql)
+        self.assertNotIn('2001-01-01', sql)
+        self.assertIn('grand_dc_live', sql)
+        self.assertIn("NOT LIKE '%aug_train%'", sql)
         self.assertIn('DATEADD(minute,-10,SYSDATETIMEOFFSET())', live.monitoring_filter({'measurement_time','is_real_device','source_type'}, 'measurement_time'))
 
     def test_ai_normal_current_still_returns_separately_stored_events(self):

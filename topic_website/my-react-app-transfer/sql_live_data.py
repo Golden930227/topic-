@@ -14,7 +14,7 @@ TABLES = {
     'anomaly_events': ('confirmation_time', 'event_uid'),
 }
 META = ['inserted_at', 'received_at', 'source_type', 'is_real_device', 'source_file',
-        'source_files', 'source_file_at_end', 'run_id', 'raw_measurement_json', 'raw_result_json', 'candidate_first_detection_time', 'occurred_at', 'event_time', 'source_file_at_start']
+        'source_files', 'source_file_at_end', 'run_id', 'raw_measurement_json', 'raw_result_json', 'candidate_first_detection_time', 'occurred_at', 'event_time', 'source_file_at_start', 'raw_event_json', 'mqtt_topic']
 _cache = {}
 _lock = threading.RLock()
 
@@ -62,32 +62,43 @@ def utc_timestamp(value):
 
 def hardware_filter(available, stamp):
     # Old imports incorrectly set is_real_device=1. Require positive provenance,
-    # reject file/simulation batches, and reject relative/epoch-placeholder dates.
+    # reject replay/simulation batches independently of the device clock.
     if 'is_real_device' not in available:
         return '1=0'
     conditions = ['TRY_CONVERT(int,[is_real_device]) = 1']
     positive = []
     if 'source_type' in available:
-        positive.append("LOWER([source_type]) IN ('dc_live','hardware_live','device_live','arduino','esp32')")
+        positive.append("LOWER([source_type]) IN ('dc_live','hardware_live','device_live','grand_dc_live','arduino','esp32')")
     if 'run_id' in available:
         positive.append("([run_id] LIKE 'arduino[_]%' OR [run_id] LIKE 'esp32[_]%' OR [run_id] LIKE 'device[_]%')")
     conditions.append('(' + ' OR '.join(positive) + ')' if positive else '1=0')
-    for column in ('source_type','run_id','source_file','source_files','source_file_at_start','source_file_at_end','raw_measurement_json','raw_result_json'):
+    for column in ('source_type','run_id','source_file','source_files','source_file_at_start','source_file_at_end','raw_measurement_json','raw_result_json','raw_event_json','mqtt_topic'):
         if column in available:
             evidence = f"LOWER(COALESCE(CONVERT(nvarchar(max),[{column}]),''))"
-            for marker in ('replay','synthetic','simulation','simulated','.csv','fake','mock'):
+            for marker in ('replay','synthetic','simulation','simulated','aug_train','aug_test','aug_val','fake','mock'):
                 conditions.append(f"{evidence} NOT LIKE '%{marker}%'")
-    for column in (stamp, 'candidate_first_detection_time', 'occurred_at', 'event_time'):
+    # CSV is the live transport too. Only Grand device batches may carry it;
+    # training/replay markers above still override the live source label.
+    for column in ('source_file','source_files','source_file_at_start','source_file_at_end'):
         if column in available:
-            conditions.append(f"([{column}] IS NULL OR [{column}] = '' OR TRY_CONVERT(datetimeoffset,[{column}]) >= CONVERT(datetimeoffset,'2001-01-01T00:00:00+00:00'))")
+            grand = "LOWER([source_type]) = 'grand_dc_live'" if 'source_type' in available else '1=0'
+            conditions.append(f"({grand} OR LOWER(COALESCE(CONVERT(nvarchar(max),[{column}]),'')) NOT LIKE '%.csv%')")
     return '(' + ' AND '.join(conditions) + ')'
 
 
 def time_info(row, stamp):
     sampled = utc_timestamp(row.get(stamp))
-    received = utc_timestamp(row.get('received_at'))
+    reception = row.get('received_at')
+    if reception:
+        try:
+            parsed = datetime.fromisoformat(str(reception).replace('Z', '+00:00'))
+            if parsed.tzinfo is None:
+                reception = str(reception) + '+08:00'
+        except (ValueError, TypeError):
+            reception = None
+    received = utc_timestamp(reception)
     inserted = utc_timestamp(row.get('inserted_at'))
-    basis = received or (sampled if stamp == 'measurement_time' else None)
+    basis = received
     age = (datetime.now(timezone.utc) - datetime.fromisoformat(basis)).total_seconds() if basis else None
     freshness = 'unknown' if age is None or age < -5 else 'fresh' if age <= 30 else 'stale'
     # Confirmation is not substituted for the actual first detection time.
@@ -97,31 +108,44 @@ def time_info(row, stamp):
             'freshnessBasis': 'received_at' if received else stamp if basis else None}
 
 
+def reception_expression(available):
+    # Grand receiver writes timezone-less wall time in Asia/Taipei; SQL sync
+    # insertion time is deliberately not used (it can be a historical import).
+    if 'received_at' not in available:
+        return 'NULL'
+    return "TRY_CONVERT(datetimeoffset, CASE WHEN CONVERT(nvarchar(100),[received_at]) LIKE '%Z' OR RIGHT(CONVERT(nvarchar(100),[received_at]),6) LIKE '[+-]__:__' THEN CONVERT(nvarchar(100),[received_at]) ELSE CONVERT(nvarchar(100),[received_at]) + '+08:00' END)"
+
+
 def monitoring_filter(available, stamp):
-    event_columns = [column for column in ('occurred_at','event_time','candidate_first_detection_time') if column in available] if stamp == 'confirmation_time' else []
-    time_expression = 'COALESCE(' + ','.join(f'TRY_CONVERT(datetimeoffset,[{column}])' for column in event_columns) + ',NULL)' if event_columns else f'TRY_CONVERT(datetimeoffset,[{stamp}])'
-    return hardware_filter(available, stamp) + f" AND {time_expression} >= DATEADD(minute,-10,SYSDATETIMEOFFSET())"
+    return hardware_filter(available, stamp) + f" AND {reception_expression(available)} BETWEEN DATEADD(minute,-10,SYSDATETIMEOFFSET()) AND DATEADD(second,5,SYSDATETIMEOFFSET())"
 
 
 def read_page(connect, table, fields, limit=200, after=None, archived=False):
     stamp, uid = TABLES[table]
     limit = min(max(int(limit), 1), 200)
     pair = decode_cursor(after) if after else None
+    physical_table = table if archived else {'dc_measurements': 'grand_measurements', 'ai_predictions': 'grand_ai_predictions', 'anomaly_events': 'grand_anomaly_events'}[table]
     with connect() as connection:
         cursor = connection.cursor()
-        cursor.execute('SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA=? AND TABLE_NAME=?', 'dbo', table)
+        cursor.execute('SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA=? AND TABLE_NAME=?', 'dbo', physical_table)
         available = {row[0] for row in cursor.fetchall()}
+        source = f'dbo.[{physical_table}]'
+        raw_column = 'raw_result_json' if table == 'ai_predictions' else 'raw_event_json'
+        if not archived and 'received_at' not in available and raw_column in available:
+            source = f"(SELECT *, JSON_VALUE(CASE WHEN ISJSON([{raw_column}]) = 1 THEN [{raw_column}] ELSE '{{}}' END, '$.received_at') AS [received_at] FROM {source}) AS [received_rows]"
+            available.add('received_at')
         if not {stamp, uid}.issubset(available):
             raise HTTPException(503, '缺少資料排序欄位')
-        columns = list(dict.fromkeys(c for c in fields + META if c in available))
+        aliases = {'vout2': 'vo'} if physical_table == 'grand_measurements' else {}
+        columns = list(dict.fromkeys(c for c in fields + META if c in available or aliases.get(c) in available))
         order = f"COALESCE(NULLIF([inserted_at], ''), [{stamp}], '')" if 'inserted_at' in available else f"COALESCE([{stamp}], '')"
         condition = monitoring_filter(available, stamp)
         where = ' WHERE ' + (f'CASE WHEN ({condition}) THEN 1 ELSE 0 END = 0' if archived else condition)
         if pair:
             where += f' AND ({order} > ? OR ({order} = ? AND [{uid}] > ?))'
         direction = 'ASC' if pair else 'DESC'
-        query = f'SELECT TOP ({limit + 1}) ' + ','.join(f'[{c}]' for c in columns)
-        query += f', {order} AS [_order] FROM dbo.[{table}]' + where + f' ORDER BY {order} {direction}, [{uid}] {direction}'
+        query = f'SELECT TOP ({limit + 1}) ' + ','.join(f'[{aliases.get(c, c)}] AS [{c}]' for c in columns)
+        query += f', {order} AS [_order] FROM {source}' + where + f' ORDER BY {order} {direction}, [{uid}] {direction}'
         cursor.execute(query, pair[0], pair[0], pair[1]) if pair else cursor.execute(query)
         raw = [dict(zip(columns + ['_order'], row)) for row in cursor.fetchall()]
     has_more = bool(pair and len(raw) > limit)
@@ -145,7 +169,7 @@ def cnn_data(connect, fields, role, after=None):
         page = read_page(connect, 'dc_measurements', visible, 20 if after else 200, after)
         return {'connected': True, 'sourcePolicy':'hardware-only', 'latestMeasurement': page['rows'][-1] if page['rows'] else None,
                 'measurementHistory': page['rows'], 'nextCursor': page['nextCursor'], 'hasMore': page['hasMore'],
-                'refreshSeconds': 1, 'windowSeconds':600, 'serverNow':datetime.now(timezone.utc).isoformat()}
+                'refreshSeconds': 3, 'windowSeconds':600, 'serverNow':datetime.now(timezone.utc).isoformat()}
     return cached(('cnn',), load) if role == 'visitor' else load()
 
 
@@ -156,7 +180,7 @@ def ai_data(connect, pred_fields, event_fields, role, event_after=None):
         return {'connected': True, 'sourcePolicy':'hardware-only', 'currentPrediction': predictions[-1] if predictions else None,
                 'predictionHistory': list(reversed(predictions)), 'recentEvents': list(reversed(events['rows'])),
                 'eventCursor': events['nextCursor'], 'eventsHaveMore': events['hasMore'],
-                'refreshSeconds': 1, 'windowSeconds':600, 'serverNow':datetime.now(timezone.utc).isoformat()}
+                'refreshSeconds': 3, 'windowSeconds':600, 'serverNow':datetime.now(timezone.utc).isoformat()}
     return cached(('ai', event_after), load) if role == 'visitor' else load()
 
 

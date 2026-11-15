@@ -36,19 +36,19 @@ export function freshnessLabel(row) {
   return Date.now()-stamp <= 30000 ? '最近收到實機資料' : '實機資料超過 30 秒未更新'
 }
 
-export function refreshSeconds() { return 1 }
+export function refreshSeconds() { return 3 }
 
 export function mergeResponse(path, previous, incoming, incremental) {
   if (previous && incoming.windowSeconds === 600 && incoming.serverNow) {
     const cutoff = Date.parse(incoming.serverNow)-600000
-    const recent = (rows,field)=>(rows || []).filter(row=>Date.parse(row[field])>=cutoff)
+    const recent = (rows,field)=>(rows || []).filter(row=>Date.parse(row._time?.receivedAt)>=cutoff)
     if (path === '/api/cnn') {
       const rows=recent(previous.measurementHistory,'measurement_time')
       const expired=rows.length!==previous.measurementHistory.length
       if (expired) previous={...previous,measurementHistory:rows,latestMeasurement:rows.at(-1) || null}
     } else {
       const predictions=recent(previous.predictionHistory,'prediction_time')
-      const events=(previous.recentEvents || []).filter(row=>Date.parse(row._time?.occurredAt || row.confirmation_time)>=cutoff)
+      const events=(previous.recentEvents || []).filter(row=>Date.parse(row._time?.receivedAt)>=cutoff)
       const expired=predictions.length!==previous.predictionHistory.length || events.length!==previous.recentEvents.length
       if (expired) previous={...previous,predictionHistory:predictions,recentEvents:events,currentPrediction:predictions[0] || null}
     }

@@ -11,7 +11,7 @@ function App({ role = 'visitor', getToken, apiBase = '' }) {
   const live = useLiveData('/api/cnn', {role, getToken, apiBase})
   const {data} = live
   const number = value=>value == null ? null : Number(value)
-  const measurementHistory = (data?.measurementHistory || []).map(row=>({id:row.measurement_uid, time:timeLabel(row,'measurement_time'), sampleMillis:Date.parse(row.measurement_time), vdc:number(row.vout2), idc:number(row.ids), power:number(row.load_power_est), rpm:number(row.rpm)}))
+  const measurementHistory = (data?.measurementHistory || []).map(row=>({id:row.measurement_uid, time:row.measurement_time ? timeLabel(row,'measurement_time') : `${formatTaipei(row._time?.receivedAt)}????`, sampleMillis:Date.parse(row._time?.receivedAt), vdc:number(row.vout2), idc:number(row.ids), power:number(row.load_power_est), rpm:number(row.rpm)}))
   const row = data?.latestMeasurement
   return <main className="cnn-monitor-page"><div className="cnn-monitor-shell">
     <header className="cnn-monitor-hero"><div>

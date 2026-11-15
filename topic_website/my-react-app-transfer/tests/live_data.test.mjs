@@ -14,8 +14,8 @@ test('later normal predictions cannot discard an anomaly retained across polls',
   const first = [{event_uid:'event-a', confirmation_time:'2000-01-01T00:00:01Z'}]
   assert.equal(mergeEvents(first, []).length, 1)
   assert.equal(mergeEvents(first, first).length, 1)
-  assert.equal(refreshSeconds('member'), 1)
-  assert.equal(refreshSeconds('visitor'), 1)
+  assert.equal(refreshSeconds('member'), 3)
+  assert.equal(refreshSeconds('visitor'), 3)
 })
 test('Taipei formatting respects both UTC and already-offset timestamps', () => {
   assert.equal(formatTaipei('2026-11-15T08:13:33.492Z'), '2026-11-15 16:13:33')
@@ -38,4 +38,11 @@ test('records automatically leave the live section after ten minutes', () => {
   const result=mergeResponse('/api/cnn',previous,incoming,true)
   assert.equal(result.data.measurementHistory.length,0)
   assert.equal(result.data.latestMeasurement,null)
+})
+
+test('relative device time retains fresh received measurements across polls', () => {
+  const row={measurement_uid:'esp32',measurement_time:null,_time:{receivedAt:'2026-11-15T08:13:33Z'}}
+  const previous={measurementHistory:[row],latestMeasurement:row}
+  const incoming={measurementHistory:[],windowSeconds:600,serverNow:'2026-11-15T08:13:36Z'}
+  assert.equal(mergeResponse('/api/cnn',previous,incoming,true).data.latestMeasurement,row)
 })
