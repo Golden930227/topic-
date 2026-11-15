@@ -1,0 +1,3 @@
+timestamp,voltage,current,note
+2026-11-15T08:00:00Z,12.34,0.56,"CSV test, PC1 to PC2"
+2026-11-15T08:00:01Z,12.35,0.57,中文測試
