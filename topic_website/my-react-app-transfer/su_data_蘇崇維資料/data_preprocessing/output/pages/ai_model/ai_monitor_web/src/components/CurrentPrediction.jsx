@@ -25,7 +25,7 @@ export default function CurrentPrediction({
         action={
           <div className="live-badge">
             <span />
-            即時監測中
+            SQL 預測資料
           </div>
         }
       />
@@ -62,7 +62,7 @@ export default function CurrentPrediction({
           <div className="confidence-row">
             <span>判斷信心度</span>
             <strong>
-              {prediction.confidence.toFixed(1)}%
+              {Number.isFinite(prediction.confidence) ? prediction.confidence.toFixed(1) + '%' : '未提供'}
             </strong>
           </div>
 
@@ -130,7 +130,7 @@ export default function CurrentPrediction({
                   </div>
 
                   <strong className="probability-value">
-                    {item.value.toFixed(1)}%
+                    {Number.isFinite(item.value) ? item.value.toFixed(1) + '%' : '未提供'}
                   </strong>
                 </div>
               )

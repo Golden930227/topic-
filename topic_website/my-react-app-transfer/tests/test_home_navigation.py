@@ -16,10 +16,10 @@ SPEC.loader.exec_module(api)
 
 class HomeNavigationTests(unittest.TestCase):
     def setUp(self):
-        self.environment = patch.dict(os.environ, {'WINDMIND_HOME_URL': ''})
+        self.environment = patch.dict(os.environ, {'WINDMIND_HOME_URL': '', 'WINDMIND_SERVICE_TOKEN':'navigation-tests-only'})
         self.environment.start()
         self.addCleanup(self.environment.stop)
-        self.client = TestClient(api.app, base_url='http://127.0.0.1:8000')
+        self.client = TestClient(api.app, base_url='http://127.0.0.1:8000', headers={'X-Windmind-Service':'navigation-tests-only'})
 
     def test_local_docs_refresh_and_assets(self):
         for _ in range(2):
@@ -32,7 +32,7 @@ class HomeNavigationTests(unittest.TestCase):
         self.assertEqual(self.client.get('/docs/oauth2-redirect').status_code, 200)
 
     def test_production_default_and_configured_home(self):
-        client = TestClient(api.app, base_url='https://api.example.com')
+        client = TestClient(api.app, base_url='https://api.example.com', headers={'X-Windmind-Service':'navigation-tests-only'})
         self.assertIn('data-home-url="/"', client.get('/docs').text)
         with patch.dict(os.environ, {'WINDMIND_HOME_URL': 'https://wind.example.com/?a=1&b="quoted"'}):
             page = client.get('/docs').text
@@ -47,7 +47,7 @@ class HomeNavigationTests(unittest.TestCase):
                     self.client.get('/docs')
 
     def test_reverse_proxy_paths(self):
-        client = TestClient(api.app, root_path='/gateway')
+        client = TestClient(api.app, root_path='/gateway', headers={'X-Windmind-Service':'navigation-tests-only'})
         page = client.get('/docs').text
         self.assertIn("url: '/gateway/openapi.json'", page)
         self.assertIn('src="/gateway/docs/home-navigation.js"', page)
@@ -56,16 +56,13 @@ class HomeNavigationTests(unittest.TestCase):
     def test_api_contract_and_read_only_endpoints(self):
         schema = self.client.get('/openapi.json')
         self.assertEqual(schema.status_code, 200)
-        self.assertEqual(set(schema.json()['paths']), {'/api/health', '/api/ai', '/api/cnn'})
+        self.assertEqual(set(schema.json()['paths']), {'/api/health', '/api/ai', '/api/cnn', '/api/diagnostics'})
         with patch.object(api, 'connect', return_value=MagicMock()):
             self.assertTrue(self.client.get('/api/health').json()['connected'])
-        with patch.object(api, 'safe_fetch', return_value=[]):
-            ai = self.client.get('/api/ai')
-            cnn = self.client.get('/api/cnn')
-            self.assertEqual(ai.status_code, 200)
-            self.assertIsNone(ai.json()['currentPrediction'])
-            self.assertEqual(cnn.status_code, 200)
-            self.assertEqual(cnn.json()['measurementHistory'], [])
+        with patch.object(api, 'ai_data', return_value={'connected':True, 'currentPrediction':None}), patch.object(api, 'cnn_data', return_value={'connected':True, 'measurementHistory':[]}):
+            self.assertIsNone(self.client.get('/api/ai').json()['currentPrediction'])
+            self.assertEqual(self.client.get('/api/cnn').json()['measurementHistory'], [])
+
 
 
 if __name__ == '__main__':

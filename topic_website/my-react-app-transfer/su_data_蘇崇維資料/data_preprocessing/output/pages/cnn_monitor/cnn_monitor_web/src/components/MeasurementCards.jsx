@@ -15,10 +15,10 @@ function MeasurementCards({ measurement }) {
           </div>
           <div>
             <p>{card.label}</p>
-            <strong>{measurement[card.key].toFixed(card.digits)}</strong>
+            <strong>{measurement[card.key] == null ? '未提供' : measurement[card.key].toFixed(card.digits)}</strong>
             <span>{card.unit}</span>
           </div>
-          <small>{card.symbol}</small>
+          <small>{card.symbol} · 取樣時間：{measurement.time}</small>
         </article>
       ))}
     </section>

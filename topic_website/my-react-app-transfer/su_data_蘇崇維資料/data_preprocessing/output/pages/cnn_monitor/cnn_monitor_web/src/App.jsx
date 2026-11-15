@@ -1,44 +1,40 @@
-import ConnectionStatus from "./components/ConnectionStatus.jsx"
-import DataStatus from "./components/DataStatus.jsx"
 import LineChart from "./components/LineChart.jsx"
 import MeasurementCards from "./components/MeasurementCards.jsx"
 import RecentMeasurementsTable from "./components/RecentMeasurementsTable.jsx"
-import { connectionStatus, dataStatus, latestMeasurement, measurementHistory } from "./data/monitorMockData.js"
+import { useLiveData } from "./useLiveData.js"
+import { timeLabel, freshnessLabel, formatTaipei } from "../../../../../../../monitor_shared/liveData.js"
+import ArchivedData from "../../../../../../../monitor_shared/ArchivedData.jsx"
+import RefreshStatus from "../../../../../../../monitor_shared/RefreshStatus.jsx"
 import "./cnn-monitor.css"
 
-function App() {
-  const resolvedDataStatus = {
-    ...dataStatus,
-    state: connectionStatus.lastUpdateSeconds > dataStatus.staleAfterSeconds
-      ? "interrupted"
-      : dataStatus.state,
-  }
-
-  return (
-    <main className="cnn-monitor-page">
-      <div className="cnn-monitor-shell">
-        <header className="cnn-monitor-hero">
-          <div>
-            <span className="monitor-eyebrow">DC WIND TURBINE MONITORING</span>
-            <h1>風機即時監測</h1>
-            <p>換向器式直流發電機 · DC 實機量測</p>
-          </div>
-          <div className="monitor-hero-actions"><span className="monitor-live-badge">示範資料，非即時量測</span></div>
-        </header>
-
-        <MeasurementCards measurement={latestMeasurement} />
-        <section className="monitor-chart-grid" aria-label="即時曲線">
-          <LineChart title="DC Voltage vs Time" description="最近 24 筆 DC 電壓量測" data={measurementHistory} dataKey="vdc" unit="V" color="#7548d1" />
-          <LineChart title="DC Current vs Time" description="最近 24 筆 DC 電流量測" data={measurementHistory} dataKey="idc" unit="A" color="#23875a" />
-        </section>
-        <section className="monitor-status-grid" aria-label="系統與資料狀態">
-          <ConnectionStatus status={connectionStatus} />
-          <DataStatus status={resolvedDataStatus} />
-        </section>
-        <RecentMeasurementsTable measurements={measurementHistory} />
-      </div>
-    </main>
-  )
+function App({ role = 'visitor', getToken, apiBase = '' }) {
+  const live = useLiveData('/api/cnn', {role, getToken, apiBase})
+  const {data} = live
+  const number = value=>value == null ? null : Number(value)
+  const measurementHistory = (data?.measurementHistory || []).map(row=>({id:row.measurement_uid, time:timeLabel(row,'measurement_time'), sampleMillis:Date.parse(row.measurement_time), vdc:number(row.vout2), idc:number(row.ids), power:number(row.load_power_est), rpm:number(row.rpm)}))
+  const row = data?.latestMeasurement
+  return <main className="cnn-monitor-page"><div className="cnn-monitor-shell">
+    <header className="cnn-monitor-hero"><div>
+      <a href="/">返回首頁</a><span className="monitor-eyebrow">DC WIND TURBINE MONITORING</span>
+      <h1>CNN 即時監測</h1><p>風機實體量測</p>
+      <p>最後取樣時間：{timeLabel(row,'measurement_time')}</p>
+      <p>曲線保留最近 200 筆實機量測</p>
+    </div></header>
+    <RefreshStatus live={live} />
+    {!row && <p className="waiting-hardware" role="status">等待實機資料</p>}
+    {row && <>
+      <MeasurementCards measurement={measurementHistory.at(-1)} />
+      <section className="monitor-chart-grid" aria-label="量測曲線">
+        <LineChart title="DC Voltage vs Time" description="最近 200 筆實機電壓量測" data={measurementHistory} dataKey="vdc" unit="V" color="#7548d1" />
+        <LineChart title="DC Current vs Time" description="最近 200 筆實機電流量測" data={measurementHistory} dataKey="idc" unit="A" color="#23875a" />
+      </section>
+    </>}
+    <section className="monitor-panel"><h2>資料來源與硬體狀態</h2>
+      <p>{freshnessLabel(row)}；裝置心跳未提供。</p>
+      <p>接收時間：{formatTaipei(row?._time?.receivedAt)} · SQL 寫入時間：{formatTaipei(row?._time?.insertedAt)}</p>
+    </section>
+    <RecentMeasurementsTable measurements={measurementHistory} />
+    <ArchivedData kind="cnn" getToken={getToken} apiBase={apiBase} />
+  </div></main>
 }
-
 export default App

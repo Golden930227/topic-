@@ -5,7 +5,8 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist', '.vercel/**', '.windmind-logs/**', '.windmind-remote-dist/**', '.windmind-venv/**', '**/node_modules/**']),
+  globalIgnores(['**/dist/**', '.vercel/**', '.windmind-logs/**', '.windmind-remote-dist/**', '.windmind-venv/**', '**/node_modules/**']),
+  { files: ['**/vite.config.js'], languageOptions: { globals: globals.node } },
   {
     files: ['**/*.{js,jsx}'],
     extends: [

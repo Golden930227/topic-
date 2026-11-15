@@ -108,7 +108,8 @@ function Navbar({
 
         {isVisitorPage && (
           <>
-            <Link to="/cnn-monitor">風機數據監測</Link>
+            <Link to="/cnn-monitor">CNN 即時監測</Link>
+            <Link to="/ai-model">AI 模型分析</Link>
             <Link to="/report">問題回報</Link>
           </>
         )}

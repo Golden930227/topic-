@@ -1,0 +1,6 @@
+.archived-data { margin-top: 36px; padding: 24px; border-top: 2px solid #d9dce5; border-radius: 12px; background: #f7f8fb; color: #3d4555; }
+.archived-data h2 { margin-top: 0; }
+.archive-table-scroll { max-height: 420px; overflow: auto; }
+.archived-data table { width: 100%; min-width: 580px; border-collapse: collapse; }
+.archived-data th,.archived-data td { padding: 10px; text-align: left; border-bottom: 1px solid #e1e4ec; }
+@media(max-width:560px){.archived-data{padding:14px}.archived-data table{min-width:460px;font-size:12px}}

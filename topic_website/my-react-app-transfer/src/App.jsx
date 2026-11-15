@@ -19,10 +19,14 @@ import {
   signOut,
 } from "firebase/auth"
 
+
+
 import {
   auth,
   googleProvider,
 } from "./firebase.js"
+
+import { isAllowedMember } from './auth/memberAccess.js'
 
 import ProtectedRoute from "./components/common/ProtectedRoute.jsx"
 
@@ -32,27 +36,17 @@ import InternalPage from "./pages/InternalPage.jsx"
 import ReportPage from "./pages/ReportPage.jsx"
 import AiModelPage from "./pages/AiModelPage.jsx"
 import CNNMonitorPage from "./pages/CNNMonitorPage.jsx"
-import RemoteLivePage from "./pages/RemoteLivePage.jsx"
-import RemoteWorkerApp from "./RemoteWorkerApp.jsx"
+import { syncSession, apiBase } from "./utils/monitorClient.js"
 
 import "./App.css"
 import "./pages/VisitorPages.css"
 
-const allowedEmails = [
-  "g99226@gmail.com",
-  "chenhongrui416@gmail.com",
-  "p124826960@gmail.com",
-
-  // 請確認這個是不是拼錯。
-  // 如果是一般 Gmail，可能應為 44o3249@gmail.com
-  "44o3249@gmaiil.com",
-
-  "xindongh522@gmail.com",
-]
-
 const workerTunnelUrl = import.meta.env.VITE_WORKER_TUNNEL_URL
 
 function getWorkerTunnelUrl() {
+  if (import.meta.env.VITE_WORKER_REMOTE === '1' || ['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname)) {
+    return '/internal'
+  }
   try {
     const url = new URL(workerTunnelUrl)
     if (url.protocol !== 'https:' || !url.hostname.endsWith('.trycloudflare.com')) return null
@@ -62,25 +56,13 @@ function getWorkerTunnelUrl() {
   }
 }
 
-function isAllowedMember(email) {
-  const normalizedEmail =
-    email?.trim().toLowerCase()
-
-  return Boolean(
-    normalizedEmail &&
-      allowedEmails.includes(
-        normalizedEmail
-      )
-  )
-}
-
-async function getAccessStatus(currentUser) {
+async function getAccessStatus(expectedUser) {
   await auth.authStateReady()
-  const activeUser = auth.currentUser
-  if (!activeUser || activeUser.uid !== currentUser?.uid) {
+  const currentUser = auth.currentUser
+  if (!currentUser || currentUser.uid !== expectedUser?.uid) {
     throw new Error('登入帳號已改變，請重新登入。')
   }
-  return isAllowedMember(activeUser.email) ? 'member' : 'visitor'
+  return isAllowedMember(currentUser.email) ? 'member' : 'visitor'
 }
 
 function AccessLoading() {
@@ -278,8 +260,11 @@ function AppRoutes() {
 
     getAccessStatus(user)
       .then((status) => {
-        if (!cancelled) {
-          setAccessStatus(status)
+        if (!cancelled) setAccessStatus(status)
+        // Firebase Auth controls login. Tool-cookie setup is
+        // independent: an unavailable API must not prevent visitor sign-in.
+        if (status === 'member' || status === 'visitor') {
+          syncSession().catch(error => console.warn('工具連線暫時無法建立：', error.message))
         }
       })
       .catch((error) => {
@@ -308,14 +293,18 @@ function AppRoutes() {
        * - 按訪客按鈕：進訪客頁
        * - 按登出按鈕：登出
        */
-      if (user) {
+      await auth.authStateReady()
+      const activeUser = auth.currentUser
+      if (activeUser) {
         if (loginMode === "member") {
-          if (!isAllowedMember(user.email)) {
+          if (!isAllowedMember(activeUser.email)) {
             window.alert("此帳號沒有工作人員權限，請聯絡管理員。")
             return
           }
+          await syncSession()
           const destination = getWorkerTunnelUrl()
-          if (destination) window.location.assign(destination)
+          if (destination === '/internal') navigate('/internal')
+          else if (destination) window.location.assign(destination)
           else window.alert("員工遠端入口目前未啟動，請稍後再試。")
           return
         }
@@ -324,9 +313,7 @@ function AppRoutes() {
         ) {
           try {
             const status =
-              await getAccessStatus(
-                user
-              )
+              await getAccessStatus(activeUser)
 
             setAccessStatus(status)
 
@@ -346,6 +333,7 @@ function AppRoutes() {
         }
 
         try {
+          await fetch(`${apiBase}/api/session`, {method:'DELETE', credentials:'include'}).catch(() => {})
           await signOut(auth)
 
           navigate("/", {
@@ -384,6 +372,7 @@ function AppRoutes() {
               signedInUser.email
             )
           ) {
+            await fetch(`${apiBase}/api/session`, {method:'DELETE', credentials:'include'}).catch(() => {})
             await signOut(auth)
 
             window.alert(
@@ -397,13 +386,16 @@ function AppRoutes() {
             return
           }
 
+          await syncSession()
           setAccessStatus("member")
 
           if (import.meta.env.VITE_WORKER_REMOTE === '1') {
             navigate("/worker", { replace: true })
           } else {
             const destination = getWorkerTunnelUrl()
-            if (destination) {
+            if (destination === '/internal') {
+              navigate('/internal', { replace: true })
+            } else if (destination) {
               window.location.assign(destination)
             } else {
               window.alert('員工遠端入口目前未啟動，請稍後再試。')
@@ -447,6 +439,12 @@ function AppRoutes() {
       }
     }
 
+  useEffect(() => {
+    if (!user || !['member', 'visitor'].includes(accessStatus)) return
+    const timer = setInterval(() => { syncSession().catch(() => {}) }, 10 * 60 * 1000)
+    return () => clearInterval(timer)
+  }, [user, accessStatus])
+
   return (
     <Routes>
       <Route
@@ -470,7 +468,10 @@ function AppRoutes() {
           />
         }
       >
-        <Route path="/visitor-register" element={<Navigate to="/visitor" replace />} />
+        <Route
+          path="/visitor-register"
+          element={<Navigate to="/visitor" replace />}
+        />
 
         <Route
           element={
@@ -494,13 +495,12 @@ function AppRoutes() {
               />
             }
           />
+          <Route path="/ai-model" element={<AiModelPage role={accessStatus} />} />
           <Route path="/report" element={<ReportPage user={user} role={accessStatus} />} />
           <Route
             path="/cnn-monitor"
             element={
-              import.meta.env.VITE_WORKER_REMOTE === '1'
-                ? <RemoteLivePage kind="cnn" />
-                : <CNNMonitorPage />
+              <CNNMonitorPage role={accessStatus} />
             }
           />
         </Route>
@@ -517,7 +517,6 @@ function AppRoutes() {
           }
         >
           <Route path="/internal" element={<InternalPage onAuthButtonClick={onAuthButtonClick} />} />
-          <Route path="/ai-model" element={import.meta.env.VITE_WORKER_REMOTE === '1' ? <RemoteLivePage kind="ai" /> : <AiModelPage />} />
           <Route
             path="/worker"
             element={
@@ -546,7 +545,6 @@ function AppRoutes() {
 }
 
 function App() {
-  if (import.meta.env.VITE_WORKER_REMOTE === '1') return <RemoteWorkerApp />
   return (
     <BrowserRouter>
       <AppRoutes />

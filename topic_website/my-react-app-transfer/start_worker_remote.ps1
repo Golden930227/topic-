@@ -1,4 +1,4 @@
-param([string]$Python)
+﻿param([string]$Python)
 $ErrorActionPreference = 'Stop'
 $root = $PSScriptRoot
 $logs = Join-Path $root '.windmind-logs'
@@ -9,13 +9,21 @@ $pages = Join-Path $dataFolder[0].FullName 'data_preprocessing\output\pages'
 $defaultPython = Join-Path $root '.windmind-venv\Scripts\python.exe'
 if (-not $Python) { $Python = $defaultPython }
 New-Item -ItemType Directory -Path $logs -Force | Out-Null
+$serviceTokenFile = Join-Path $logs 'service-token.txt'
+if (-not (Test-Path -LiteralPath $serviceTokenFile)) {
+    $rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+    try { $bytes = New-Object byte[] 32; $rng.GetBytes($bytes); [Convert]::ToBase64String($bytes) | Set-Content -LiteralPath $serviceTokenFile -Encoding ASCII }
+    finally { $rng.Dispose() }
+}
+$env:WINDMIND_SERVICE_TOKEN = (Get-Content -LiteralPath $serviceTokenFile -Raw).Trim()
+
 if (-not (Test-Path -LiteralPath $Python)) { throw "Python not found: $Python" }
 if (-not (Test-Path -LiteralPath (Join-Path $dist 'index.html'))) { throw 'Remote site is not built. Run build_worker_remote.ps1 first.' }
 & $Python -c 'import fastapi, uvicorn, streamlit, plotly, pandas, pyodbc'
 if ($LASTEXITCODE -ne 0) { throw "Missing Python dependencies. Run: & '$Python' -m pip install -r requirements-worker-remote.txt" }
 $node = (Get-Command node.exe -ErrorAction Stop).Source
 $services = @(
-    @{ Name='api'; Port=18000; Dir=$pages; Exe=$Python; Args=@('-m','uvicorn','sql_api:app','--host','127.0.0.1','--port','18000'); Path='/openapi.json' },
+    @{ Name='api'; Port=18000; Dir=$pages; Exe=$Python; Args=@('-m','uvicorn','sql_api:app','--host','127.0.0.1','--port','18000'); Path='/ready' },
     @{ Name='pipeline'; Port=18501; Dir=$root; Exe=$Python; Args=@('-m','streamlit','run',(Join-Path $root 'pipeline_monitor\app.py'),'--server.address','127.0.0.1','--server.port','18501','--server.baseUrlPath','pipeline','--server.headless','true','--server.enableCORS','false','--server.enableXsrfProtection','false'); Path='/pipeline/_stcore/health' },
     @{ Name='sql-monitor'; Port=18502; Dir=$root; Exe=$Python; Args=@('-m','streamlit','run',(Join-Path $root 'streamlist.py'),'--server.address','127.0.0.1','--server.port','18502','--server.baseUrlPath','sql-monitor','--server.headless','true','--server.enableCORS','false','--server.enableXsrfProtection','false'); Path='/sql-monitor/_stcore/health' },
     @{ Name='proxy'; Port=18764; Dir=$root; Exe=$node; Args=@((Join-Path $root 'windmind_remote_proxy.cjs')); Path='/healthz' }

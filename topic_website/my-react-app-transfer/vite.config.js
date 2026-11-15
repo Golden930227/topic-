@@ -5,7 +5,9 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   // The standalone internal.html has no server-side employee authentication.
-  server: { host: "127.0.0.1" },
+  server: { host: "127.0.0.1", proxy: {
+    '/api': {target: process.env.WINDMIND_API_PROXY || 'http://127.0.0.1:8000'},
+  } },
   preview: { host: "127.0.0.1" },
   resolve: {
   dedupe: [

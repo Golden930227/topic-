@@ -1,0 +1,7 @@
+.refresh-status { margin: 12px 0 20px; color: inherit; }
+.refresh-status p { margin: 7px 0; }
+.refresh-dot { display: inline-block; width: 9px; height: 9px; margin-right: 9px; border-radius: 50%; background: #8490a4; }
+.refresh-dot.pulse { background: #20a776; animation: refresh-pulse .55s ease-out; }
+.refresh-dot.failed { background: #d34652; }
+@keyframes refresh-pulse { 0% { opacity: .35; box-shadow: 0 0 0 0 #20a77680; } 40% { opacity: 1; box-shadow: 0 0 0 5px #20a77625; } 100% { opacity: .85; box-shadow: 0 0 0 8px transparent; } }
+@media (prefers-reduced-motion: reduce) { .refresh-dot.pulse { animation: none; } }

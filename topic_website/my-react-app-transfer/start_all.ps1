@@ -4,11 +4,19 @@ $root = $PSScriptRoot
 $pages = Join-Path $root 'su_data_蘇崇維資料\data_preprocessing\output\pages'
 $logs = Join-Path $root '.windmind-logs'
 New-Item -ItemType Directory -Path $logs -Force | Out-Null
+$serviceTokenFile = Join-Path $logs 'service-token.txt'
+if (-not (Test-Path -LiteralPath $serviceTokenFile)) {
+    $rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+    try { $bytes = New-Object byte[] 32; $rng.GetBytes($bytes); [Convert]::ToBase64String($bytes) | Set-Content -LiteralPath $serviceTokenFile -Encoding ASCII }
+    finally { $rng.Dispose() }
+}
+$env:WINDMIND_SERVICE_TOKEN = (Get-Content -LiteralPath $serviceTokenFile -Raw).Trim()
+
 $python = (Get-Command python.exe -ErrorAction Stop).Source
 $node = (Get-Command node.exe -ErrorAction Stop).Source
 $env:CORS_ORIGINS = 'http://localhost:5173,http://localhost:5174,http://localhost:5175,http://127.0.0.1:5173,http://127.0.0.1:5174,http://127.0.0.1:5175'
 $services = @(
-    @{ Name='api'; Dir=$pages; Port=8000; Exe=$python; Args=@('-m','uvicorn','sql_api:app','--host','127.0.0.1','--port','8000'); Path='/openapi.json' },
+    @{ Name='api'; Dir=$pages; Port=8000; Exe=$python; Args=@('-m','uvicorn','sql_api:app','--host','127.0.0.1','--port','8000'); Path='/ready' },
     @{ Name='main'; Dir=$root; Port=5173 },
     @{ Name='ai'; Dir=(Join-Path $pages 'ai_model\ai_monitor_web'); Port=5174 },
     @{ Name='cnn'; Dir=(Join-Path $pages 'cnn_monitor\cnn_monitor_web'); Port=5175 },
@@ -48,7 +56,7 @@ foreach ($service in $services) {
     Write-Host "Ready: $($service.Name) $url" -ForegroundColor Green
 }
 try {
-    $health = Invoke-RestMethod 'http://127.0.0.1:8000/api/health' -TimeoutSec 10
+    $health = Invoke-RestMethod 'http://127.0.0.1:8000/api/health' -Headers @{'X-Windmind-Service'=$env:WINDMIND_SERVICE_TOKEN} -TimeoutSec 10
     Write-Host "SQL connected: $($health.database)" -ForegroundColor Green
 } catch { Write-Warning 'API is running, but SQL health check failed. Check SQL Server and database settings.' }
 try {
