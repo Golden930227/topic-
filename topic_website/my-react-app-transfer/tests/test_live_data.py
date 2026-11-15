@@ -3,6 +3,7 @@ import importlib.util
 import json
 from pathlib import Path
 import unittest
+from datetime import datetime, timezone, timedelta
 from unittest.mock import patch
 
 from fastapi import HTTPException
@@ -17,6 +18,34 @@ SPEC.loader.exec_module(api)
 
 
 class LiveDataTests(unittest.TestCase):
+    def test_receiver_time_and_device_clock_are_separate(self):
+        now = datetime.now(timezone.utc)
+        row = {'source_type':'grand_dc_live', 'is_real_device':1,
+               'received_at':now.astimezone(timezone(timedelta(hours=8))).replace(tzinfo=None).isoformat(),
+               'inserted_at':now.isoformat(), 'measurement_time':'2056-11-14T13:07:52+00:00',
+               '_relative_clock':True}
+        info = live.time_info(row, 'measurement_time')
+        self.assertEqual(info['freshness'], 'fresh')
+        self.assertIsNone(info['sampleAt'])
+        self.assertAlmostEqual(datetime.fromisoformat(info['receivedAt']).timestamp(), now.timestamp(), places=2)
+        for invalid in (None, '', 'not-a-date', '2000-01-01T00:01:00Z', '2056-11-14T13:07:52Z'):
+            info = live.time_info({**row, 'received_at':invalid}, 'measurement_time')
+            self.assertEqual(info['freshness'], 'unknown')
+            self.assertIsNone(info['receivedAt'])
+        old = live.time_info({**row, 'received_at':(now-timedelta(hours=2)).isoformat()}, 'measurement_time')
+        self.assertEqual(old['freshness'], 'stale')
+        self.assertIsNone(live.utc_timestamp('2056-11-14T13:07:52Z'))
+
+    def test_test_marker_overrides_grand_real_device_flag(self):
+        row = {'source_type':'grand_dc_live', 'is_real_device':1,
+               'received_at':datetime.now(timezone.utc).isoformat()}
+        for evidence in ({'source_file':'wind_simulation.csv'},
+                         {'raw_measurement_json':'{"current_raw_unverified":"TEST-20261115-210751-3bdcd1"}'},
+                         {'source_file':'wind_test_10.csv'}):
+            info = live.time_info({**row, **evidence}, 'measurement_time')
+            self.assertEqual(info['dataKind'], 'test')
+            self.assertEqual(info['freshness'], 'unknown')
+
     def setUp(self):
         live._cache.clear()
 

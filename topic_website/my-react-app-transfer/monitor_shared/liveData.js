@@ -22,7 +22,7 @@ const taipei = new Intl.DateTimeFormat('en-CA', {
 export function formatTaipei(value) {
   if (!value || !/(Z|[+-]\d{2}:\d{2})$/i.test(value)) return '未提供'
   const date = new Date(value)
-  if (!Number.isFinite(date.getTime()) || date.getUTCFullYear() <= 2000) return '未提供'
+  if (!Number.isFinite(date.getTime()) || date.getUTCFullYear() <= 2000 || date.getTime()-Date.now()>5000) return '未提供'
   const parts = Object.fromEntries(taipei.formatToParts(date).map(part => [part.type, part.value]))
   return `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute}:${parts.second}`
 }
@@ -30,9 +30,12 @@ export function formatTaipei(value) {
 export function timeLabel(row, field) { return formatTaipei(row?.[field]) }
 
 export function freshnessLabel(row) {
+  if (row?._time?.dataKind === 'test') return '測試資料（不代表硬體在線）'
+  if (row?._time?.dataKind === 'replay') return '重播資料（不代表硬體在線）'
+  if (row?._time?.dataKind !== 'hardware') return '資料來源未知，硬體狀態未知'
   const basis = row?._time?.receivedAt
   const stamp = basis && Date.parse(basis)
-  if (!Number.isFinite(stamp) || Date.now()-stamp < -5000) return '接收時間未提供'
+  if (!Number.isFinite(stamp) || Date.now()-stamp < -5000) return '接收時間未知，硬體狀態未知'
   return Date.now()-stamp <= 30000 ? '最近收到資料' : '資料超過 30 秒未更新'
 }
 

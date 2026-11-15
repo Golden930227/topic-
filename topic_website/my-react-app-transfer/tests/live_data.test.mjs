@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { mergeEvents, mergeMeasurements, refreshSeconds, formatTaipei, mergeResponse } from '../monitor_shared/liveData.js'
+import { mergeEvents, mergeMeasurements, refreshSeconds, formatTaipei, mergeResponse, freshnessLabel } from '../monitor_shared/liveData.js'
 
 test('CNN deduplicates catch-up batches and retains exactly the last 200', () => {
   const rows = Array.from({length:200}, (_, i) => ({measurement_uid:String(i)}))
@@ -61,4 +61,12 @@ test('last genuine snapshot remains visible and stale without a rolling expiry w
  const row={measurement_uid:'stale',_time:{receivedAt:'2026-11-15T08:00:00Z'}}
  const incoming={measurementHistory:[row],windowSeconds:null,serverNow:'2026-11-15T10:00:00Z'}
  assert.equal(mergeResponse('/api/cnn',null,incoming,false).data.latestMeasurement,row)
+})
+
+test('test data never claims online and invalid reception never uses SQL insertion', () => {
+ const now=new Date().toISOString()
+ assert.equal(formatTaipei('2056-11-14T13:07:52Z'),'未提供')
+ assert.equal(freshnessLabel({_time:{dataKind:'test',receivedAt:now,insertedAt:now}}),'測試資料（不代表硬體在線）')
+ assert.equal(freshnessLabel({_time:{dataKind:'hardware',receivedAt:null,insertedAt:now}}),'接收時間未知，硬體狀態未知')
+ assert.equal(freshnessLabel({_time:{dataKind:'hardware',receivedAt:now}}),'最近收到資料')
 })

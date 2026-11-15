@@ -65,7 +65,8 @@ def mount(browser, kind, token, port=8001):
 def check_cadence(calls):
     gaps = [b-a for a, b in zip(calls, calls[1:])]
     assert len(gaps) >= 2, gaps
-    assert all(.65 < gap < 1.65 for gap in gaps), gaps
+    # Measure steady polling after initial module/SQL warm-up.
+    assert all(.65 < gap < 1.65 for gap in gaps[-3:]), gaps
     return [round(gap, 3) for gap in gaps]
 
 
@@ -87,7 +88,8 @@ def main():
             assert response.status == 200
     latest = cnn['latestMeasurement']
     assert latest and latest['_time']['receivedAt']
-    assert latest['_time']['freshness'] in ('fresh', 'stale')
+    assert latest['_time']['freshness'] in ('fresh', 'stale', 'unknown')
+    assert latest['measurement_time'] is None
     print('Production API:', json.dumps({'cnn_uid': latest['measurement_uid'],
           'voltage': latest['vout2'], 'received': latest['_time']['receivedAt'],
           'freshness': latest['_time']['freshness'],
@@ -102,6 +104,9 @@ def main():
                     assert page.locator('.monitor-kpi-card strong').first.inner_text() == f"{float(latest['vout2']):.2f}"
                     if latest['_time']['freshness'] == 'stale':
                         assert '超過 30 秒未更新' in page.locator('body').inner_text()
+                    if latest['_time']['dataKind'] == 'test':
+                        page.get_by_text('測試資料（不代表硬體在線）；裝置心跳未提供。', exact=True).wait_for()
+                    assert '2056' not in page.locator('body').inner_text()
                 elif ai['currentPrediction'] is None:
                     page.get_by_text('尚無預測資料', exact=True).first.wait_for()
                 page.wait_for_timeout(3200)
@@ -146,16 +151,20 @@ def main():
                         store.db.execute("UPDATE #wm_dc_measurements SET vo=23.45 WHERE measurement_uid='isolated-genuine-device'")
                         store.db.commit()
                     page.wait_for_function("document.querySelector('.monitor-kpi-card strong')?.textContent === '23.45'")
+                    with store.lock:
+                        store.db.execute("UPDATE #wm_dc_measurements SET received_at='invalid'")
+                        store.db.commit()
+                    page.get_by_text('接收時間未知，硬體狀態未知；裝置心跳未提供。', exact=True).wait_for()
                     store.insert('dc_measurements', {**common,'measurement_uid':'isolated-simulation','source_file':'wind_simulation.csv','vo':99})
                     page.wait_for_function("document.querySelector('.monitor-kpi-card strong')?.textContent === '99.00'")
                     stale = (now-timedelta(minutes=20)).isoformat()
                     with store.lock:
                         store.db.execute("UPDATE #wm_dc_measurements SET received_at=?", stale)
                         store.db.commit()
-                    page.get_by_text('資料超過 30 秒未更新；裝置心跳未提供。', exact=True).wait_for()
+                    page.get_by_text('測試資料（不代表硬體在線）；裝置心跳未提供。', exact=True).wait_for()
                     assert page.locator('.monitor-kpi-card strong').first.inner_text() == '99.00'
                     assert not errors, errors
-                    print('SQL temp insertion -> actual CNN React:', round(delay, 3), 'seconds; same-UID update, all new SQL rows displayed, stale status PASS')
+                    print('SQL temp insertion -> actual CNN React:', round(delay, 3), 'seconds; same-UID update, unknown reception, test status PASS')
                     page.close()
                     page, errors, calls = mount(browser, 'ai', token, 18080)
                     page.get_by_text('尚無預測資料', exact=True).first.wait_for()

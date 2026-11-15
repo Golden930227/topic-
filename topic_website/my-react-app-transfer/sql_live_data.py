@@ -2,6 +2,7 @@
 import base64
 import copy
 import json
+import re
 import threading
 import time
 from datetime import datetime, timezone
@@ -53,7 +54,7 @@ def utc_timestamp(value):
         return None
     try:
         parsed = value if isinstance(value, datetime) else datetime.fromisoformat(str(value).replace('Z', '+00:00'))
-        if parsed.tzinfo is None or parsed.year <= 2000:
+        if parsed.tzinfo is None or parsed.year <= 2000 or (parsed - datetime.now(timezone.utc)).total_seconds() > 5:
             return None
         return parsed.astimezone(timezone.utc).isoformat(timespec='milliseconds')
     except (ValueError, TypeError):
@@ -86,8 +87,21 @@ def hardware_filter(available, stamp):
     return '(' + ' AND '.join(conditions) + ')'
 
 
+def data_kind(row):
+    evidence = ' '.join(str(row.get(key) or '') for key in (
+        'source_type', 'run_id', 'source_file', 'source_files', 'source_file_at_start',
+        'source_file_at_end', 'raw_measurement_json', 'raw_result_json', 'raw_event_json', 'mqtt_topic')).lower()
+    if 'replay' in evidence:
+        return 'replay'
+    if any(marker in evidence for marker in ('synthetic', 'simulation', 'simulated', 'aug_train', 'aug_test', 'aug_val', 'fake', 'mock')) or re.search(r'\btest\b|(?:^|[_/\\.-])(?:test|testing|demo)(?:[_/\\.-]|$)', evidence):
+        return 'test'
+    real = str(row.get('is_real_device')).lower() in ('1', '1.0', 'true')
+    source = str(row.get('source_type') or '').lower()
+    return 'hardware' if real and source in ('dc_live', 'hardware_live', 'device_live', 'grand_dc_live', 'arduino', 'esp32') else 'unknown'
+
+
 def time_info(row, stamp):
-    sampled = utc_timestamp(row.get(stamp))
+    sampled = None if row.get('_relative_clock') else utc_timestamp(row.get(stamp))
     reception = row.get('received_at')
     if reception:
         try:
@@ -100,11 +114,12 @@ def time_info(row, stamp):
     inserted = utc_timestamp(row.get('inserted_at'))
     basis = received
     age = (datetime.now(timezone.utc) - datetime.fromisoformat(basis)).total_seconds() if basis else None
-    freshness = 'unknown' if age is None or age < -5 else 'fresh' if age <= 30 else 'stale'
+    kind = data_kind(row)
+    freshness = 'unknown' if kind != 'hardware' or age is None or age < -5 else 'fresh' if age <= 30 else 'stale'
     # Confirmation is not substituted for the actual first detection time.
-    occurred = utc_timestamp(row.get('occurred_at') or row.get('event_time') or row.get('candidate_first_detection_time'))
+    occurred = None if row.get('_relative_clock') else utc_timestamp(row.get('occurred_at') or row.get('event_time') or row.get('candidate_first_detection_time'))
     return {'sampleAt': sampled, 'occurredAt': occurred, 'receivedAt': received, 'insertedAt': inserted,
-            'freshness': freshness, 'ageSeconds': age,
+            'freshness': freshness, 'ageSeconds': age, 'dataKind': kind,
             'freshnessBasis': 'received_at' if received else stamp if basis else None}
 
 
@@ -156,7 +171,10 @@ def read_page(connect, table, fields, limit=200, after=None, archived=False):
         raw.reverse()
     public = []
     for row in raw:
-        item = {field: utc_timestamp(row.get(field)) if field.endswith(('_time','_at')) else row.get(field) for field in fields}
+        # Grand derives device times from 2000-01-01 + timestamp_ms. They are
+        # relative even when a mistaken Unix-ms input happens to yield 2056.
+        row['_relative_clock'] = physical_table.startswith('grand_')
+        item = {field: (None if row['_relative_clock'] else utc_timestamp(row.get(field))) if field.endswith('_time') else utc_timestamp(row.get(field)) if field.endswith('_at') else row.get(field) for field in fields}
         item['_time'] = time_info(row, stamp)
         item['_cursor'] = cursor_for(row['_order'], row[uid])
         public.append(item)
