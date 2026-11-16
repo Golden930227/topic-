@@ -28,8 +28,8 @@ export function useLiveData(path, { role = 'visitor', getToken, apiBase = '' } =
           })
           if (!response.ok) throw new Error(`連線異常（HTTP ${response.status}）`)
           const incoming = await response.json()
-          if (!incoming.connected) throw new Error('SQL 連線異常')
-          if (incoming.sourcePolicy !== 'sql-latest') throw new Error('資料來源檢查尚未就緒')
+          if (!incoming.connected) throw new Error(path === '/api/cnn' ? '等待可讀取的 CSV 資料' : 'SQL 連線異常')
+          if (incoming.sourcePolicy !== (path === '/api/cnn' ? 'csv-latest' : 'sql-latest')) throw new Error('資料來源檢查尚未就緒')
           if (!active) return
           const merged = mergeResponse(path, data, incoming, false)
           data = merged.data

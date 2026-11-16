@@ -17,7 +17,7 @@ function buildChart(values, times, width, height, padding) {
 
 function LineChart({ title, description, data: inputData, dataKey, unit, color }) {
   const data = inputData.filter(item => Number.isFinite(item[dataKey]) && Number.isFinite(item.sampleMillis))
-  if (!data.length) return <article className="monitor-panel"><h2>{title}</h2><p>等待有效的實機取樣時間與量測資料。</p></article>
+  if (!data.length) return <article className="monitor-panel"><h2>{title}</h2><p>等待有效的 CSV 量測資料。</p></article>
   const width = 680
   const height = 230
   const padding = 22
@@ -32,7 +32,7 @@ function LineChart({ title, description, data: inputData, dataKey, unit, color }
           <h2>{title}</h2>
           <p>{description}</p>
         </div>
-        <span className="monitor-live-badge"><i /> SQL 資料</span>
+        <span className="monitor-live-badge"><i /> CSV 資料</span>
       </header>
       <div className="monitor-chart-wrap">
         <div className="monitor-chart-scale">

@@ -3,7 +3,6 @@ import MeasurementCards from "./components/MeasurementCards.jsx"
 import RecentMeasurementsTable from "./components/RecentMeasurementsTable.jsx"
 import { useLiveData } from "./useLiveData.js"
 import { freshnessLabel, formatTaipei } from "../../../../../../../monitor_shared/liveData.js"
-import ArchivedData from "../../../../../../../monitor_shared/ArchivedData.jsx"
 import RefreshStatus from "../../../../../../../monitor_shared/RefreshStatus.jsx"
 import "./cnn-monitor.css"
 
@@ -11,14 +10,15 @@ function App({ role = 'visitor', getToken, apiBase = '' }) {
   const live = useLiveData('/api/cnn', {role, getToken, apiBase})
   const {data} = live
   const number = value=>value == null ? null : Number(value)
-  const measurementHistory = (data?.measurementHistory || []).map(row=>({id:row.measurement_uid, time:formatTaipei(row._time?.insertedAt), sampleMillis:Date.parse(row._time?.insertedAt), vdc:number(row.vout2), idc:number(row.ids), power:number(row.load_power_est), rpm:number(row.rpm)}))
+  const measurementHistory = (data?.measurementHistory || []).map((row,index)=>({id:row.measurement_uid, time:formatTaipei(row._time?.loadedAt), sampleMillis:index, vdc:number(row.vout2), idc:number(row.ids), power:number(row.load_power_est), rpm:number(row.rpm)}))
   const row = data?.latestMeasurement
   return <main className="cnn-monitor-page"><div className="cnn-monitor-shell">
     <header className="cnn-monitor-hero"><div>
       <a href="/">返回首頁</a><span className="monitor-eyebrow">DC WIND TURBINE MONITORING</span>
       <h1>CNN 即時監測</h1><p>風機量測資料</p>
-      <p>最新 SQL 入庫時間：{formatTaipei(row?._time?.insertedAt)}</p>
-      <p>曲線保留最近 200 筆量測</p>
+      <p>後端讀入時間（台灣）：{formatTaipei(data?.loadedAt)}</p>
+      <p>來源 CSV：{data?.sourceFile || '等待資料'}</p>
+      <p>曲線保留最近 200 筆量測，依 CSV 接收順序排列</p>
     </div></header>
     <RefreshStatus live={live} />
     {!row && <p className="waiting-hardware" role="status">等待資料</p>}
@@ -31,10 +31,10 @@ function App({ role = 'visitor', getToken, apiBase = '' }) {
     </>}
     <section className="monitor-panel"><h2>資料來源與硬體狀態</h2>
       <p>{freshnessLabel(row)}；裝置心跳未提供。</p>
-      <p>CSV 內接收時間：{formatTaipei(row?._time?.receivedAt)} · SQL 寫入時間：{formatTaipei(row?._time?.insertedAt)}</p>
+      <p>CSV 內接收時間（原值）：{row?.received_at || '未提供'} · 後端讀入時間（台灣）：{formatTaipei(data?.loadedAt)}</p>
     </section>
     <RecentMeasurementsTable measurements={measurementHistory} />
-    <ArchivedData kind="cnn" getToken={getToken} apiBase={apiBase} />
+    {data?.readWarning && <p role="status">{data.readWarning}</p>}
   </div></main>
 }
 export default App

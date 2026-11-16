@@ -44,13 +44,13 @@ export function refreshSeconds() { return 1 }
 export function mergeResponse(path, previous, incoming, incremental) {
   if (previous && incoming.windowSeconds === 600 && incoming.serverNow) {
     const cutoff = Date.parse(incoming.serverNow)-600000
-    const recent = (rows,field)=>(rows || []).filter(row=>Date.parse(row._time?.receivedAt)>=cutoff)
+    const recent = (rows)=>(rows || []).filter(row=>Date.parse(row._time?.receivedAt)>=cutoff)
     if (path === '/api/cnn') {
-      const rows=recent(previous.measurementHistory,'measurement_time')
+      const rows=recent(previous.measurementHistory)
       const expired=rows.length!==previous.measurementHistory.length
       if (expired) previous={...previous,measurementHistory:rows,latestMeasurement:rows.at(-1) || null}
     } else {
-      const predictions=recent(previous.predictionHistory,'prediction_time')
+      const predictions=recent(previous.predictionHistory)
       const events=(previous.recentEvents || []).filter(row=>Date.parse(row._time?.receivedAt)>=cutoff)
       const expired=predictions.length!==previous.predictionHistory.length || events.length!==previous.recentEvents.length
       if (expired) previous={...previous,predictionHistory:predictions,recentEvents:events,currentPrediction:predictions[0] || null}

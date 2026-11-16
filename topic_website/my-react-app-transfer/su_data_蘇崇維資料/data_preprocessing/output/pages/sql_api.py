@@ -11,7 +11,9 @@ from starlette.concurrency import run_in_threadpool
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
 from windmind_auth import identity, member
-from sql_live_data import cnn_data, ai_data, archived_data
+from sql_live_data import ai_data, archived_data
+from csv_live_data import measurements
+from contextlib import asynccontextmanager
 from fastapi.openapi.docs import get_swagger_ui_html, get_swagger_ui_oauth2_redirect_html
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -19,7 +21,16 @@ from fastapi.middleware.cors import CORSMiddleware
 SERVER = os.getenv('SQL_SERVER', r'DESKTOP-H5OBRG3\SQLEXPRESS01')
 DATABASE = os.getenv('SQL_DATABASE', 'wind_turbine')
 ORIGINS = os.getenv('CORS_ORIGINS', 'http://localhost:5173,http://localhost:5174,http://127.0.0.1:5173,http://127.0.0.1:5174').split(',')
-app = FastAPI(title='WindMind Live SQL API', docs_url=None, redoc_url=None)
+@asynccontextmanager
+async def lifespan(app):
+    measurements.start()
+    try:
+        yield
+    finally:
+        measurements.stop()
+
+
+app = FastAPI(title='WindMind Live SQL API', docs_url=None, redoc_url=None, lifespan=lifespan)
 app.add_middleware(CORSMiddleware, allow_origins=ORIGINS, allow_credentials=True, allow_methods=['GET', 'POST', 'DELETE'], allow_headers=['*'])
 
 def home_url(request: Request):
@@ -96,12 +107,13 @@ def ai(request: Request, event_after: str | None = None, archive: bool = False):
 
 @app.get('/api/cnn')
 def cnn(request: Request, after: str | None = None, archive: bool = False):
-    try:
-        if archive:
-            return archived_data(connect, 'cnn', MEAS_COLS, request.state.user['role'])
-        return cnn_data(connect, MEAS_COLS, request.state.user['role'], after)
-    except pyodbc.Error as error:
-        raise HTTPException(503, 'SQL Server unavailable or query failed') from error
+    if after and request.state.user['role'] != 'member':
+        raise HTTPException(403, '訪客僅能讀取監測快照')
+    snapshot = measurements.snapshot(request.state.user['role'])
+    if archive:
+        return {'connected': snapshot['connected'], 'records': list(reversed(snapshot['measurementHistory'])),
+                'events': [], 'limit': 200, 'sourcePolicy': 'csv-latest'}
+    return snapshot
 
 
 @app.get('/api/diagnostics', tags=['診斷'], summary='檢查 SQL、API、新鮮度與最新資料一致性')

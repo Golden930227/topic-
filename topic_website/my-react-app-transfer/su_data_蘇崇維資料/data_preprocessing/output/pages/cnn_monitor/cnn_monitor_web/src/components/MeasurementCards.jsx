@@ -18,7 +18,7 @@ function MeasurementCards({ measurement }) {
             <strong>{measurement[card.key] == null ? '未提供' : measurement[card.key].toFixed(card.digits)}</strong>
             <span>{card.unit}</span>
           </div>
-          <small>{card.symbol} · 取樣時間：{measurement.time}</small>
+          <small>{card.symbol} · 後端讀入時間（台灣）：{measurement.time}</small>
         </article>
       ))}
     </section>
