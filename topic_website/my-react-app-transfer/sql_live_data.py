@@ -195,7 +195,7 @@ def cnn_data(connect, fields, role, after=None):
 
 def ai_data(connect, pred_fields, event_fields, role, event_after=None):
     def load():
-        predictions = read_page(connect, 'ai_predictions', pred_fields, 50 if role == 'member' else 1)['rows']
+        predictions = read_page(connect, 'ai_predictions', pred_fields, 50 if role == 'member' else 10)['rows']
         events = read_page(connect, 'anomaly_events', event_fields, 200, event_after)
         return {'connected': True, 'sourcePolicy':'sql-latest', 'currentPrediction': predictions[-1] if predictions else None,
                 'predictionHistory': list(reversed(predictions)), 'recentEvents': list(reversed(events['rows'])),

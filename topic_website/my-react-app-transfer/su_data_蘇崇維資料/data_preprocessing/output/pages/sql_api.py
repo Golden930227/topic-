@@ -23,6 +23,9 @@ DATABASE = os.getenv('SQL_DATABASE', 'wind_turbine')
 ORIGINS = os.getenv('CORS_ORIGINS', 'http://localhost:5173,http://localhost:5174,http://127.0.0.1:5173,http://127.0.0.1:5174').split(',')
 @asynccontextmanager
 async def lifespan(app):
+    import logging
+    logging.getLogger('uvicorn.error').info(
+        'SQL live data module: %s', sys.modules[ai_data.__module__].__file__)
     measurements.start()
     try:
         yield

@@ -23,7 +23,7 @@ if (-not (Test-Path -LiteralPath (Join-Path $dist 'index.html'))) { throw 'Remot
 if ($LASTEXITCODE -ne 0) { throw "Missing Python dependencies. Run: & '$Python' -m pip install -r requirements-worker-remote.txt" }
 $node = (Get-Command node.exe -ErrorAction Stop).Source
 $services = @(
-    @{ Name='api'; Port=18000; Dir=$pages; Exe=$Python; Args=@('-m','uvicorn','sql_api:app','--host','127.0.0.1','--port','18000'); Path='/ready' },
+    @{ Name='api'; Port=8001; Dir=$pages; Exe=$Python; Args=@('-m','uvicorn','sql_api:app','--host','127.0.0.1','--port','8001'); Path='/ready' },
     @{ Name='pipeline'; Port=18501; Dir=$root; Exe=$Python; Args=@('-m','streamlit','run',(Join-Path $root 'pipeline_monitor\app.py'),'--server.address','127.0.0.1','--server.port','18501','--server.baseUrlPath','pipeline','--server.headless','true','--server.enableCORS','false','--server.enableXsrfProtection','false'); Path='/pipeline/_stcore/health' },
     @{ Name='sql-monitor'; Port=18502; Dir=$root; Exe=$Python; Args=@('-m','streamlit','run',(Join-Path $root 'streamlist.py'),'--server.address','127.0.0.1','--server.port','18502','--server.baseUrlPath','sql-monitor','--server.headless','true','--server.enableCORS','false','--server.enableXsrfProtection','false'); Path='/sql-monitor/_stcore/health' },
     @{ Name='proxy'; Port=18764; Dir=$root; Exe=$node; Args=@((Join-Path $root 'windmind_remote_proxy.cjs')); Path='/healthz' }
@@ -38,7 +38,17 @@ if (-not (Test-Path -LiteralPath $codeFile)) {
 try {
     foreach ($service in $services) {
         $listener = @(Get-NetTCPConnection -State Listen -LocalPort $service.Port -ErrorAction SilentlyContinue)
-        if ($listener.Count) { throw "Port $($service.Port) is already occupied. Stop the other process first." }
+        if ($listener.Count) {
+            if ($service.Name -eq 'api') {
+                $owner = Get-CimInstance Win32_Process -Filter "ProcessId=$($listener[0].OwningProcess)"
+                if ($owner.CommandLine -notlike '*sql_api:app*') { throw 'Port 8001 is occupied by a different application.' }
+                $response = Invoke-WebRequest -Uri 'http://127.0.0.1:8001/ready' -UseBasicParsing -TimeoutSec 3
+                if ($response.StatusCode -ne 200) { throw 'Existing API on port 8001 is not ready.' }
+                Write-Host 'Reusing shared API: http://127.0.0.1:8001' -ForegroundColor Green
+                continue
+            }
+            throw "Port $($service.Port) is already occupied. Stop the other process first."
+        }
         if ($service.Name -eq 'pipeline') { $env:WINDMIND_MONITOR_ACCESS_CODE = (Get-Content -LiteralPath $codeFile -Raw).Trim() }
         try {
             $process = Start-Process -FilePath $service.Exe -ArgumentList $service.Args -WorkingDirectory $service.Dir -WindowStyle Hidden -PassThru `
