@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { mergeResponse, refreshSeconds } from './liveData.js'
+import { fetchApiResponse } from './apiResponse.js'
 
 export function useLiveData(path, { role = 'visitor', getToken, apiBase = '' } = {}) {
   const interval = refreshSeconds(role)
@@ -22,7 +23,7 @@ export function useLiveData(path, { role = 'visitor', getToken, apiBase = '' } =
         while (more && active) {
           const params = new URLSearchParams()
           if (path === '/api/ai' && eventCursor) params.set('event_after', eventCursor)
-          const response = await fetch(`${apiBase}${path}${params.size ? '?' + params : ''}`, {
+          const response = await fetchApiResponse(`${apiBase}${path}${params.size ? '?' + params : ''}`, {
             headers: { Authorization: `Bearer ${token}` }, credentials: 'include',
             cache: 'no-store', signal: controller.signal,
           })
