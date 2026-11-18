@@ -1,9 +1,9 @@
-param([switch]$GoogleLoginOnly)
+param([switch]$GoogleLoginOnly = $true)
 $ErrorActionPreference = 'Stop'
 $root = $PSScriptRoot
 $logs = Join-Path $root '.windmind-logs'
 $tunnelArgs = @('tunnel','--url','http://127.0.0.1:18764')
-# Keep the existing email gate unless Google-only access is explicitly selected.
+# Use website Firebase login by default; explicitly pass -GoogleLoginOnly:$false for the extra email gate.
 if (-not $GoogleLoginOnly) {
     & (Join-Path $root 'prepare_cloudflare_allowlist.ps1') -ShowCount
     $allowlist = ((Get-Content -LiteralPath (Join-Path $root '.env.worker.local') -Raw -Encoding UTF8).Trim() -split '=', 2)[1]
@@ -11,7 +11,7 @@ if (-not $GoogleLoginOnly) {
     $tunnelArgs += @('--allowed-mail',$allowlist)
 } else {
     # Refuse to publish if the application's own login check is unavailable.
-    foreach ($apiPath in @('/api/health','/api/cnn','/api/ai','/api/access')) {
+    foreach ($apiPath in @('/api/health','/api/cnn','/api/ai','/api/access','/api/session')) {
         $status = 0
         try { $status = (Invoke-WebRequest -Uri ('http://127.0.0.1:18764' + $apiPath) -UseBasicParsing -TimeoutSec 5).StatusCode }
         catch { if ($_.Exception.Response) { $status = [int]$_.Exception.Response.StatusCode } else { throw } }

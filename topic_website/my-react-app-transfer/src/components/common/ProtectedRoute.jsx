@@ -29,7 +29,7 @@ function ProtectedRoute({ user, authReady, onMemberLogin }) {
         <main className="access-page">
           <section className="access-card">
             <h1>同組 Google 登入</h1>
-            <p>Cloudflare Email 驗證已完成。請使用同組 Google 帳號登入 WindMind。</p>
+            <p>請使用同組 Google 帳號登入 WindMind。</p>
             <button type="button" className="primary-action" onClick={() => onMemberLogin('member')}>
               同組 Google 登入
             </button>
