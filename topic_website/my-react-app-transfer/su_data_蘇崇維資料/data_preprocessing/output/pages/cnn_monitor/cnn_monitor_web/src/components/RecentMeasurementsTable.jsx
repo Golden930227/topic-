@@ -1,9 +1,9 @@
 function RecentMeasurementsTable({ measurements }) {
-  const recent = measurements.slice(-15).reverse()
+  const recent = measurements.slice(-50).reverse()
   return (
     <article className="monitor-panel">
       <header className="monitor-panel-heading">
-        <div><span className="monitor-section-kicker">RECENT DATA</span><h2>最近接收資料</h2><p>最近 15 筆直流發電機量測紀錄</p></div>
+        <div><span className="monitor-section-kicker">RECENT DATA</span><h2>最近接收資料</h2><p>最近 50 筆直流發電機量測紀錄</p></div>
         <span className="monitor-record-count">{recent.length} 筆</span>
       </header>
       <div className="monitor-table-scroll">
